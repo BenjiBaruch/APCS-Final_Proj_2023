@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 
 public class GamePanel extends JPanel {
     String prompt;
@@ -16,7 +17,12 @@ public class GamePanel extends JPanel {
         guess = null;
         timeLimit = 10;
         time = 0;
-        font = Font.createFont(Font.TRUETYPE_FONT, new File("C:\\Users\\ultra\\IdeaProjects\\APCS Final Proj 2023\\data\\Carnevalee Freakshow.ttf"));
+        try {
+            font = Font.createFont(Font.TRUETYPE_FONT, new File("C:\\Users\\ultra\\IdeaProjects\\APCS Final Proj 2023\\data\\Carnevalee Freakshow.ttf"));
+        } catch (IOException | FontFormatException e) {
+            System.out.println(e.toString());
+            font = Font.getFont(Font.SERIF);
+        }
     }
 
     public void newRound(String prompt, double timeLimit) {
@@ -54,7 +60,6 @@ public class GamePanel extends JPanel {
         b = (b - min) / range + 0.75;
         return new Color((float)r, (float)g, (float)b);
     }
-
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
@@ -62,6 +67,7 @@ public class GamePanel extends JPanel {
         int pX = (int)((double) pSize * prompt.length() / -2);
         int pY = pSize * 2;
         int pArc = pSize / 6;
+        g2.setFont(font.deriveFont(pSize * 0.8f));
 
         for (int i = 0; i < prompt.length(); i++) {
             g2.setColor(getPastel());
