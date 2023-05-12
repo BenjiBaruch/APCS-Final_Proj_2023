@@ -1,16 +1,24 @@
+import java.util.Timer;
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class Main implements KeyListener {
     JFrame window;
-    JPanel panel;
-    char[] guess = new char[64];
+    GamePanel panel;
+    GameLoop loop;
+    Timer timer;
+    public Main() {
+        createWindow();
+        timer = new Timer();
+        loop = new GameLoop(panel);
+        timer.scheduleAtFixedRate(loop, 25L, 25L);
+    }
     public void createWindow() {
         window = new JFrame();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setResizable(false);
-        window.setTitle("Chess");
+        window.setResizable(true);
+        window.setTitle("Word Guessing Game (original)");
 
         panel = new GamePanel();
         panel.addKeyListener(this);
@@ -21,7 +29,7 @@ public class Main implements KeyListener {
         window.setVisible(true);
     }
     public static void main(String[] args) {
-        System.out.println(Boolean.toString(new Dictionary().checkWord("helloresdf")));
+        new Main();
     }
 
     @Override
@@ -31,7 +39,11 @@ public class Main implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-
+        int code = e.getKeyCode();
+        if ('A' <= (char)code && (char)code <= 'Z') loop.appendChar((char)code);
+        else if ('a' <= (char)code && (char)code <= 'z') loop.appendChar((char)code - ('a'-'A'));
+        else if (code == 8 || code == 37 || code == 65483) loop.backspace();
+        else if (code == 9 || code == 10 || code == 32 || code == 40) loop.guessWord();
     }
 
     @Override

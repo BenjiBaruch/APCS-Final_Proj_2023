@@ -22,7 +22,7 @@ public class Dictionary {
             BufferedReader in = new BufferedReader(new FileReader(path));
             String entry = in.readLine();
             while (entry != null) {
-                wordList.add(entry.strip().toLowerCase());
+                wordList.add(entry.strip().toUpperCase());
                 entry = in.readLine();
             }
         } catch (FileNotFoundException e) {
@@ -51,8 +51,20 @@ public class Dictionary {
         System.out.println("Prompt List Length:" + wordList.size());
     }
 
-    public boolean checkWord(String word) {
-        return wordList.contains(word.strip().toLowerCase());
+    public boolean checkWord(String word, String prompt) {
+        if (!wordList.contains(word.strip().toUpperCase())) return false;
+        int p = 0;
+        for (int i = 0; i < word.length(); i++) {
+            if (prompt.charAt(i) == word.charAt(p) || prompt.charAt(i) == '_') {
+                p++;
+                if (p >= word.length()-1) {
+                    return true;
+                }
+            } else {
+                p = 0;
+            }
+        }
+        return false;
     }
 
     public String randomPrompt(int round) {

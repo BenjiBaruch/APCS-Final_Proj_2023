@@ -36,10 +36,17 @@ public class GamePanel extends JPanel {
         repaint();
     }
 
-    public void update(char[] guess, double time) {
-        this.guess = guess;
+    public void update(double time) {
         this.time = time;
         repaint();
+    }
+
+    public void setGuess(char[] guess) {
+        this.guess = guess;
+    }
+
+    public void setTime(double time) {
+        this.time = time;
     }
 
     public Color getPastel() {
@@ -67,13 +74,28 @@ public class GamePanel extends JPanel {
         int pX = (int)((double) pSize * prompt.length() / -2);
         int pY = pSize * 2;
         int pArc = pSize / 6;
+        int segmentsTotal = 50;
+        int segmentsCurrent = (int)(segmentsTotal * time / timeLimit);
+        int radius = pSize * prompt.length();
+        final double halfpi = 1.57079633D;
+        final double twopi = 6.28318531D;
         g2.setFont(font.deriveFont(pSize * 0.8f));
-
         for (int i = 0; i < prompt.length(); i++) {
             g2.setColor(getPastel());
             g2.fillRoundRect(pX, pY, pSize, pSize, pArc, pArc);
             g2.setColor(Color.BLACK);
             g2.drawString(prompt.substring(i,i+1), pX, pY);
         }
+        g2.setStroke(new BasicStroke(5F));
+        for (int i = 0; i < segmentsCurrent; i++) {
+            if (i < segmentsTotal / 2) g2.setColor(new Color(Math.min(255, Math.max(0, (int)(512*segmentsCurrent/segmentsTotal))), 255, 0));
+            if (i < segmentsTotal / 2) g2.setColor(new Color(255, Math.min(255, Math.max(0, 512 - (int)(512*segmentsCurrent/segmentsTotal))) , 0));
+            g2.drawLine(
+                    (int)(radius * Math.cos(-twopi * segmentsCurrent / segmentsCurrent + halfpi)),
+                    (int)(radius * Math.sin(twopi * segmentsCurrent / segmentsCurrent + halfpi)),
+                    (int)(radius * Math.cos(-twopi * (segmentsCurrent + 1) / segmentsCurrent + halfpi)),
+                    (int)(radius * Math.sin(twopi * (segmentsCurrent + 1) / segmentsCurrent + halfpi)));
+        }
+
     }
 }
