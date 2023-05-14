@@ -11,9 +11,10 @@ public class GamePanel extends JPanel {
     char[] guess;
     int head;
     double time, timeLimit;
-    int wX, wY;
+    int wX, wY, wSize;
     Font font;
     JFrame window;
+    final Color TRANSPARENT = new Color(0, 0, 0, 0);
 
     public GamePanel(JFrame window) {
         prompt = "**PLACEHOLDER";
@@ -22,7 +23,7 @@ public class GamePanel extends JPanel {
         timeLimit = 10;
         time = 0;
         try {
-            font = Font.createFont(Font.TRUETYPE_FONT, new File("data/Hegimeda.otf"));
+            font = Font.createFont(Font.TRUETYPE_FONT, new File("data/Silvera Peach.otf"));
         } catch (IOException | FontFormatException e) {
             System.out.println(e.toString());
             font = Font.getFont(Font.SERIF);
@@ -52,6 +53,7 @@ public class GamePanel extends JPanel {
     }
 
     public void setGuess(char[] guess) {
+        System.out.println(String.valueOf(guess));
         this.guess = guess;
     }
 
@@ -59,7 +61,7 @@ public class GamePanel extends JPanel {
         this.time = time;
     }
 
-    public Color getPastel() {
+    private Color getPastel() {
         // Returns pastel color (random color normalized to 0.75-1.00 interval)
 
         // Get random doubles between 0 and 1 for r, g, and b
@@ -77,40 +79,78 @@ public class GamePanel extends JPanel {
         b = (b - min) / range + 0.75;
         return new Color((float)r, (float)g, (float)b);
     }
+
+    private Color pastelize(Color c) {
+        int min = Math.min(c.getRed(), Math.min(c.getGreen(), c.getBlue()));
+        int max = Math.max(c.getRed(), Math.max(c.getGreen(), c.getBlue()));
+        int range = (max - min) * 4;
+        return new Color(
+                    (c.getRed() - min) / range + 192,
+                    (c.getGreen() - min) / range + 192,
+                    (c.getBlue() - min) / range + 192
+        );
+    }
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        // Set variables
         Dimension d = window.getSize();
         wX = d.width;
         wY = d.height;
+        wSize = Math.min(wX, wY) ;
         Graphics2D g2 = (Graphics2D) g;
-        int pSize = (int)((double) Math.min(wX, wY) * 0.8 / Math.max(6, prompt.length()));
+        int pSize = (int)((double) wSize * 0.8 / Math.max(6, prompt.length()));
         int pX = (int)((double) pSize * prompt.length() / -2) + wX/2;
         int pY = pSize * 2;
         int pArc = pSize / 6;
         int segmentsTotal = 150;
         int segmentsCurrent = (int)(segmentsTotal * (1 - (time / timeLimit)));
-        int radius = pSize * prompt.length();
+        int radius = (int)(wSize * 0.4);
         final double halfpi = 1.57079633D;
         final double twopi = 6.28318531D;
+
+        // Configure g2
         g2.setFont(font.deriveFont(pSize * 0.8f));
+        g2.setStroke(new BasicStroke(wSize / 80F));
+
+        // Glow
+        if (segmentsCurrent > segmentsTotal / 2) g2.setColor(new Color(Math.min(255, Math.max(0, 512-(512*segmentsCurrent/segmentsTotal))), 255, 0));
+        else g2.setColor(new Color(255, Math.min(255, Math.max(0, (512*segmentsCurrent/segmentsTotal))) , 0));
+        Color[] circColor = {g2.getColor(), TRANSPARENT};
+        float[] dist = {0.3F, 0.3F};
+        Paint paint = g2.getPaint();
+        //final Paint radial = new RadialGradientPaint(0F, 0F, wSize/2F, dist, circColor);
+        //g2.setPaint(radial);
+        g2.fillOval(wX/2 - wSize/4, wY/2 - wSize/4, wSize/2, wSize/2);
+        g2.setPaint(paint);
+
+        // Timer
+        g2.fillOval(
+                wX/2 - wSize/80,
+                wY/2 - wSize/80 - radius,
+                wSize / 40, wSize / 40);
+        g2.fillOval(
+                wX/2 - wSize/80 + (int)(radius * Math.cos((2*Math.PI * segmentsCurrent / segmentsTotal) + (Math.PI / 2))),
+                wY/2 - wSize/80 + (int)(radius * -Math.sin((2*Math.PI * segmentsCurrent / segmentsTotal) + (Math.PI / 2))),
+                wSize / 40, wSize / 40);
+        for (int i = 0; i < segmentsCurrent; i++) {
+            double theta1 = (2*Math.PI * i / segmentsTotal) + (Math.PI / 2);
+            double theta2 = (2*Math.PI * (i + 1) / segmentsTotal) + (Math.PI / 2);
+            g2.drawLine(
+                    wX/2 + (int)(radius * Math.cos(theta1)),
+                    wY/2 + (int)(radius * -Math.sin(theta1)),
+                    wX/2 + (int)(radius * Math.cos(theta2)),
+                    wY/2 + (int)(radius * -Math.sin(theta2)));
+        }
+
+        // Prompt
         for (int i = 0; i < prompt.length(); i++) {
             g2.setColor(promptColors[i]);
             g2.fillRoundRect(pX + (int)(pSize * 1.2 * i), pY, pSize, pSize, pArc, pArc);
             g2.setColor(Color.BLACK);
-            g2.drawString(prompt.substring(i,i+1), pX + (int)(pSize * 1.2 * (i + 0.3)), pY + (int)(pSize * 0.7));
+            g2.drawString(prompt.substring(i,i+1), pX + (int)(pSize * 1.2 * (i + 0.24)), pY + (int)(pSize * 0.75));
         }
-        g2.setStroke(new BasicStroke(5F));
-        if (segmentsCurrent > segmentsTotal / 2) g2.setColor(new Color(Math.min(255, Math.max(0, 512-(int)(512*segmentsCurrent/segmentsTotal))), 255, 0));
-        else g2.setColor(new Color(255, Math.min(255, Math.max(0, (int)(512*segmentsCurrent/segmentsTotal))) , 0));
-        for (int i = 0; i < segmentsCurrent; i++) {
-            double theta1 = -twopi * i / segmentsTotal + halfpi;
-            double theta2 = -twopi * (i + 1) / segmentsTotal + halfpi;
-            g2.drawLine(
-                    (int)(radius * Math.cos(theta1) + (wX/2)),
-                    (int)(radius * Math.sin(theta1) + (wY/2)),
-                    (int)(radius * Math.cos(theta2) + (wX/2)),
-                    (int)(radius * Math.sin(theta2) + (wY/2)));
-        }
+
 
     }
 }

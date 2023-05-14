@@ -23,7 +23,7 @@ public class Main implements KeyListener {
         panel = new GamePanel(window);
         panel.addKeyListener(this);
         window.add(panel);
-        window.setSize(740, 740);
+        window.setSize(800, 650);
 
         window.setLocationRelativeTo(null);
         window.setVisible(true);
@@ -39,6 +39,7 @@ public class Main implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
+        System.out.print("hehe ");
         int code = e.getKeyCode();
         if ('A' <= (char)code && (char)code <= 'Z') loop.appendChar((char)code);
         else if ('a' <= (char)code && (char)code <= 'z') loop.appendChar((char)code - ('a'-'A'));
