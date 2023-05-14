@@ -12,6 +12,7 @@ public class GameLoop extends TimerTask {
 
     public GameLoop(GamePanel panel) {
         this.panel = panel;
+        panel.newRound("**PLACEHOLDER", 10000000000L);
         rounds = 0;
         dict = new Dictionary();
         newRound();

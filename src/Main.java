@@ -20,10 +20,10 @@ public class Main implements KeyListener {
         window.setResizable(true);
         window.setTitle("Word Guessing Game (original)");
 
-        panel = new GamePanel();
+        panel = new GamePanel(window);
         panel.addKeyListener(this);
         window.add(panel);
-        window.pack();
+        window.setSize(740, 740);
 
         window.setLocationRelativeTo(null);
         window.setVisible(true);
