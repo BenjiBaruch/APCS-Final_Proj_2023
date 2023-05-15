@@ -32,7 +32,7 @@ public class GameLoop extends TimerTask {
             for (double item : fps) fpsSum += item;
             System.out.println("avg fps: " + (fpsSum / 200));
         } else {
-            fps[head++] = (int)(1/(time - timePrev));
+            fps[frameNum++] = (int)(1000000000/(time - timePrev));
         }
     }
 
@@ -49,9 +49,9 @@ public class GameLoop extends TimerTask {
 
     public void appendChar(int c) {
         if (head == 64) return;
-        guess[head] = (char)c;
+        guess[head++] = (char)c;
         // System.out.println("h: " + head + ", s:" + String.valueOf(guess));
-        panel.setGuess(String.valueOf(Arrays.copyOfRange(guess, 0, head++)));
+        panel.setGuess(String.valueOf(Arrays.copyOfRange(guess, 0, head)));
     }
 
     public void backspace() {
@@ -66,6 +66,10 @@ public class GameLoop extends TimerTask {
         System.out.println("checking");
         if (dict.checkWord((String.valueOf(Arrays.copyOfRange(guess, 0, head))), prompt)) {
             newRound();
+        } else {
+            guess = new char[64];
+            head = 0;
+            panel.setGuess("");
         }
     }
 }
