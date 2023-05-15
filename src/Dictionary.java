@@ -55,7 +55,7 @@ public class Dictionary {
         if (!wordList.contains(word.strip().toUpperCase())) return false;
         int p = 0;
         for (int i = 0; i < word.length(); i++) {
-            if (prompt.charAt(i) == word.charAt(p) || prompt.charAt(i) == '_') {
+            if (prompt.charAt(p) == word.charAt(i) || prompt.charAt(p) == '_') {
                 p++;
                 if (p >= word.length()-1) {
                     return true;

@@ -21,6 +21,8 @@ public class Main implements KeyListener {
         window.setTitle("Word Guessing Game (original)");
 
         panel = new GamePanel(window);
+        panel.setFocusable(true);
+        panel.grabFocus();
         panel.addKeyListener(this);
         window.add(panel);
         window.setSize(800, 650);
@@ -34,12 +36,10 @@ public class Main implements KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
-
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        System.out.print("hehe ");
         int code = e.getKeyCode();
         if ('A' <= (char)code && (char)code <= 'Z') loop.appendChar((char)code);
         else if ('a' <= (char)code && (char)code <= 'z') loop.appendChar((char)code - ('a'-'A'));
@@ -49,6 +49,5 @@ public class Main implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
-
     }
 }
