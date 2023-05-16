@@ -65,8 +65,10 @@ public class GameLoop extends TimerTask {
         if (head == 0) return;
         System.out.println("checking");
         if (dict.checkWord((String.valueOf(Arrays.copyOfRange(guess, 0, head))), prompt)) {
+            System.out.println("good");
             newRound();
         } else {
+            System.out.println("bad");
             guess = new char[64];
             head = 0;
             panel.setGuess("");

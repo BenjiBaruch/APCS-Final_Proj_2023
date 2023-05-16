@@ -9,7 +9,7 @@ public class GamePanel extends JPanel {
     String prompt, guess;
     Color[] promptColors, guessColors;
     double time, timeLimit;
-    int wX, wY, wSize;
+    int wX, wY, wSize, rounds;
     Font font;
     JFrame window;
     final Color TRANSPARENT = new Color(0, 0, 0, 0);
@@ -20,6 +20,7 @@ public class GamePanel extends JPanel {
         this.window = window;
         timeLimit = 10;
         time = 0;
+        rounds = -2;
         try {
             font = Font.createFont(Font.TRUETYPE_FONT, new File("data/Silvera Peach.otf"));
         } catch (IOException | FontFormatException e) {
@@ -29,6 +30,7 @@ public class GamePanel extends JPanel {
 
     public void newRound(String prompt, double timeLimit) {
         this.prompt = prompt;
+        rounds++;
         promptColors = new Color[prompt.length()];
         for (int i = 0; i < prompt.length(); i++)
             promptColors[i] = getPastel();
@@ -107,7 +109,7 @@ public class GamePanel extends JPanel {
         final double twopi = 6.28318531D;
 
         // Configure g2
-        g2.setFont(font.deriveFont(pSize * 0.8f));
+        g2.setFont(font.deriveFont(pSize * 0.8F));
         g2.setStroke(new BasicStroke(wSize / 80F));
         g2.setBackground(Color.WHITE);
 
@@ -157,6 +159,9 @@ public class GamePanel extends JPanel {
             g2.drawRoundRect(pX + (int)(pSize * 1.2 * i), pY, pSize, pSize, pArc, pArc);
             g2.drawString(prompt.substring(i,i+1), pX + (int)(pSize * 1.2 * (i + 0.24)), pY + (int)(pSize * 0.75));
         }
+
+        // Round counter
+        g2.drawString(Integer.toString(rounds), (wX-wSize)/2 + (pSize / 5), (wY-wSize)/2 + (pSize * 4 / 5));
 
         // Guess
         pSize = (int)((double) wSize * 0.6 / Math.max(10, guess.length()));

@@ -7,22 +7,24 @@ import java.util.Locale;
 
 public class Dictionary {
     // Words from: https://github.com/dwyl/english-words
-    HashSet<String> wordList;
+    HashSet<String> validWords;
+    HashSet<String> usedWords;
     String[] promptList;
 
     public Dictionary() {
         loadWordList("C:\\Users\\ultra\\IdeaProjects\\APCS Final Proj 2023\\data\\words_alpha.txt");
         loadPromptList("C:\\Users\\ultra\\IdeaProjects\\APCS Final Proj 2023\\data\\prompts.txt");
+        usedWords = new HashSet<>(50);
     }
 
     public void loadWordList(String path) {
-        wordList = new HashSet<>(300000);
+        validWords = new HashSet<>(300000);
         try {
             // Modified from previous project (chess)
             BufferedReader in = new BufferedReader(new FileReader(path));
             String entry = in.readLine();
             while (entry != null) {
-                wordList.add(entry.strip().toUpperCase());
+                validWords.add(entry.strip().toUpperCase());
                 entry = in.readLine();
             }
         } catch (FileNotFoundException e) {
@@ -30,7 +32,7 @@ public class Dictionary {
         } catch (IOException e) {
             System.out.println("I/O error");
         }
-        System.out.println("Word List Length:" + wordList.size());
+        System.out.println("Word List Length:" + validWords.size());
     }
 
     public void loadPromptList(String path) {
@@ -48,16 +50,18 @@ public class Dictionary {
         } catch (IOException e) {
             System.out.println("I/O error");
         }
-        System.out.println("Prompt List Length:" + wordList.size());
+        System.out.println("Prompt List Length:" + validWords.size());
     }
 
     public boolean checkWord(String word, String prompt) {
-        if (!wordList.contains(word.strip().toUpperCase())) return false;
+        if (!validWords.contains(word.strip().toUpperCase())) return false;
+        if (usedWords.contains(word.strip().toUpperCase())) return false;
         int p = 0;
         for (int i = 0; i < word.length(); i++) {
             if (prompt.charAt(p) == word.charAt(i) || prompt.charAt(p) == '_') {
                 p++;
-                if (p >= word.length()-1) {
+                if (p >= prompt.length()) {
+                    usedWords.add(word);
                     return true;
                 }
             } else {
