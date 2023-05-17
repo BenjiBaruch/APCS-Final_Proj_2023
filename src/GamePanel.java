@@ -101,7 +101,7 @@ public class GamePanel extends JPanel {
         Graphics2D g2 = (Graphics2D) g;
         int pSize = (int)((double) wSize * 0.8 / Math.max(6, prompt.length()));
         int pX = (int)((double) pSize * prompt.length() / -2) + wX/2;
-        int pY = wSize/2 - (int)(pSize*1.5);
+        int pY = wSize/2 - (int)(pSize*1.5) + wY - wSize;
         int pArc = pSize / 6;
         int segmentsTotal = 150;
         int segmentsCurrent = (int)(segmentsTotal * (1 - (time / timeLimit)));
@@ -166,7 +166,7 @@ public class GamePanel extends JPanel {
         // Guess
         pSize = (int)((double) wSize * 0.6 / Math.max(10, guess.length()));
         pX = (int)((double) pSize * guess.length() / -2) + wX/2;
-        pY = wSize/2 + (int)(pSize*1.5);
+        pY = wSize/2 + (int)(pSize*1.5) + wY - wSize;
         pArc = pSize / 6;
         g2.setStroke(new BasicStroke(3));
         g2.setFont(font.deriveFont(pSize * 0.8f));
