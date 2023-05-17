@@ -38,8 +38,7 @@ public class Dictionary {
         System.out.println("Word List Length:" + validWords.size());
     }
     public void autoPromptList(String path) {
-        System.out.println("why");
-
+        // Generate list of 20K most common English words
         String[] easyWordList = new String[20005];
         int head = 0;
         try {
@@ -47,7 +46,6 @@ public class Dictionary {
             BufferedReader in = new BufferedReader(new FileReader(path));
             String entry = in.readLine();
             while (entry != null) {
-                System.out.println(head);
                 entry = entry.strip().toUpperCase();
                 boolean valid = true;
                 if (entry.length() < 5) valid = false;
@@ -65,20 +63,24 @@ public class Dictionary {
         } catch (IOException e) {
             System.out.println("I/O error");
         }
+
+
         ArrayList<String>[] prompts = new ArrayList[8];
         for (int i = 0; i < 8; i++) prompts[i] = new ArrayList<>(10);
 
-        System.out.println("please god");
-
+        // Creates prompt list
         boolean complete = false;
         while (!complete) {
+            // Copy word from word list
             String prompt = easyWordList[(int)(Math.random()*head)];
+            // Trim some letters off the word to make it between 2 and 4 characters long
             int len = (int)(Math.random()*3)+2;
             int offset = (int)(Math.random() * (prompt.length() - len));
             prompt = prompt.substring(offset, offset + len);
+            // If <random>, replace letter with underscore
             if ((int)(Math.random()*4) == 0) {
                 int blank = (int)(Math.random()*len);
-                prompt = prompt.substring(0, blank-1) + '_' + prompt.substring(blank);
+                prompt = prompt.substring(0, blank) + '_' + prompt.substring(blank+1);
             }
             int count = 0;
             Count:
@@ -99,23 +101,16 @@ public class Dictionary {
             int level;
             if (count < 10) continue;
             else if (count > 2000) level = 0;
-            else if (count > 1500) level = 1;
-            else if (count > 1000) level = 2;
-            else if (count > 500) level = 3;
-            else if (count > 300) level = 4;
-            else if (count > 150) level = 5;
-            else if (count > 70) level = 6;
-            else if (count > 30) level = 7;
-            else level = 8;
+            else if (count > 480) level = 1;
+            else if (count > 240) level = 2;
+            else if (count > 120) level = 3;
+            else if (count > 80) level = 4;
+            else if (count > 50) level = 5;
+            else if (count > 20) level = 6;
+            else level = 7;
 
-            System.out.print("Level " + level);
-
-            if (prompts[level].size() < 10) {
-                prompts[level].add(prompt);
-                System.out.println(" added");
-            }
+            if (prompts[level].size() < 10) prompts[level].add(prompt);
             else {
-                System.out.println(" rejected");
                 complete = true;
                 for (ArrayList<String> list : prompts)
                     if (list.size() < 10) {
