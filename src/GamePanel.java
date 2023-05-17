@@ -29,6 +29,7 @@ public class GamePanel extends JPanel {
     }
 
     public void newRound(String prompt, double timeLimit) {
+        // Grabs new prompt, reset time and guess, changes prompt/guess colors, increments round.
         this.prompt = prompt;
         rounds++;
         promptColors = new Color[prompt.length()];
@@ -52,7 +53,6 @@ public class GamePanel extends JPanel {
     }
 
     public void setGuess(String guess) {
-        System.out.println(guess);
         this.guess = guess;
     }
 
@@ -80,6 +80,7 @@ public class GamePanel extends JPanel {
     }
 
     private Color pastelize(Color c) {
+        // Makes a color pastel by normalizing its RGB values between 0.75 and 1.0;
         int min = Math.min(c.getRed(), Math.min(c.getGreen(), c.getBlue()));
         int max = Math.max(c.getRed(), Math.max(c.getGreen(), c.getBlue()));
         int range = (max - min) * 4;
@@ -123,7 +124,6 @@ public class GamePanel extends JPanel {
         g2.fillRect((wX-wSize)/2, (wY-wSize)/2, wSize, wSize);
         Color[] circColor = {faded1, faded2};
         float[] dist = {0F, 0.8F};
-        // System.out.println("wX = " + wX + ", wY = " + wY + ", wSize = " + wSize);
         // wX = 800, wY = 650, wSize = 650
         final Paint radial = new RadialGradientPaint(wX/2F, wY/2F,  wSize/2F, dist, circColor);
         g2.setPaint(radial);

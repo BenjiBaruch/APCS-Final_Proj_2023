@@ -30,13 +30,13 @@ public class GameLoop extends TimerTask {
             frameNum = 0;
             double fpsSum = 0;
             for (double item : fps) fpsSum += item;
-            System.out.println("avg fps: " + (fpsSum / 200));
         } else {
             fps[frameNum++] = (int)(1000000000/(time - timePrev));
         }
     }
 
     public void newRound() {
+        // Resets guess, time limit, and calls panel newRound method.
         guess = new char[64];
         head = 0;
         prompt = dict.randomPrompt(++rounds);
@@ -48,27 +48,25 @@ public class GameLoop extends TimerTask {
     }
 
     public void appendChar(int c) {
+        // Appends char when a Latin letter is typed
         if (head == 64) return;
         guess[head++] = (char)c;
-        // System.out.println("h: " + head + ", s:" + String.valueOf(guess));
         panel.setGuess(String.valueOf(Arrays.copyOfRange(guess, 0, head)));
     }
 
     public void backspace() {
+        // Removes a char when backspace, left arrow, or CTRL+Z are used.
         if (head == 0) return;
         guess[--head] = (char)0;
-        // System.out.println("h: " + head + ", s:" + String.valueOf(guess));
         panel.setGuess(String.valueOf(Arrays.copyOfRange(guess, 0, head)));
     }
 
     public void guessWord() {
+        // Checks if an entered word is valid and resets guess when enter key or space bar is used
         if (head == 0) return;
-        System.out.println("checking");
         if (dict.checkWord((String.valueOf(Arrays.copyOfRange(guess, 0, head))), prompt)) {
-            System.out.println("good");
             newRound();
         } else {
-            System.out.println("bad");
             guess = new char[64];
             head = 0;
             panel.setGuess("");

@@ -21,6 +21,7 @@ public class Dictionary {
     }
 
     public void loadWordList(String path) {
+        // Loads word list from txt file
         validWords = new HashSet<>(300000);
         try {
             // Modified from previous project (chess)
@@ -38,6 +39,8 @@ public class Dictionary {
         System.out.println("Word List Length:" + validWords.size());
     }
     public void autoPromptList(String path) {
+        // Fills prompt list with randomly generated prompts of increasing difficulty
+
         // Generate list of 20K most common English words
         String[] easyWordList = new String[20005];
         int head = 0;
@@ -70,6 +73,7 @@ public class Dictionary {
 
         // Creates prompt list
         boolean complete = false;
+        CreatePromptList:
         while (!complete) {
             // Copy word from word list
             String prompt = easyWordList[(int)(Math.random()*head)];
@@ -78,7 +82,7 @@ public class Dictionary {
             int offset = (int)(Math.random() * (prompt.length() - len));
             prompt = prompt.substring(offset, offset + len);
             // If <random>, replace letter with underscore
-            if ((int)(Math.random()*4) == 0) {
+            if (prompt.length() > 2 && (int)(Math.random()*4) == 0) {
                 int blank = (int)(Math.random()*len);
                 prompt = prompt.substring(0, blank) + '_' + prompt.substring(blank+1);
             }
@@ -98,9 +102,11 @@ public class Dictionary {
                     }
                 }
             }
+            for (ArrayList<String> row : prompts) if (row.contains(prompt)) continue CreatePromptList;
+
             int level;
             if (count < 10) continue;
-            else if (count > 2000) level = 0;
+            else if (count > 960) level = 0;
             else if (count > 480) level = 1;
             else if (count > 240) level = 2;
             else if (count > 120) level = 3;
@@ -109,6 +115,7 @@ public class Dictionary {
             else if (count > 20) level = 6;
             else level = 7;
 
+            if (level < 3) for (int i = 0; i < prompt.length(); i++) if (prompt.charAt(i) == '_') continue CreatePromptList;
             if (prompts[level].size() < 10) prompts[level].add(prompt);
             else {
                 complete = true;
@@ -126,6 +133,7 @@ public class Dictionary {
     }
 
     public void loadPromptList(String path) {
+        // Loads prompt list from txt file
         promptList = new String[77];
         int head = 0;
         try {
@@ -144,8 +152,22 @@ public class Dictionary {
     }
 
     public boolean checkWord(String word, String prompt) {
+        // Word is invalid if it is the same as the prompt (unless it fills in a blank)
+        if (word.length() == prompt.length()) {
+            boolean hasBlank = false;
+            for (int i = 0; i < prompt.length(); i++)
+                if (prompt.charAt(i) == '_') {
+                    hasBlank = true;
+                    break;
+                }
+            if (!hasBlank) return false;
+        }
+        // Word is invalid if it is not in the list of English words
         if (!validWords.contains(word.strip().toUpperCase())) return false;
+        // Word is invalid if it has already been used this game
         if (usedWords.contains(word.strip().toUpperCase())) return false;
+        // Word is valid if and only if each letter of the prompt is found in the word,
+        // in order, with no gaps between letters, with blanks replaced by any letter
         int p = 0;
         for (int i = 0; i < word.length(); i++) {
             if (prompt.charAt(p) == word.charAt(i) || prompt.charAt(p) == '_') {
@@ -162,6 +184,7 @@ public class Dictionary {
     }
 
     public String randomPrompt(int round) {
+        // Grabs random prompt from list. The higher the round number, the harder the prompts (on average)
         int index = (int)(Math.random() * Math.min(round+10, promptList.length));
         return promptList[index];
     }
