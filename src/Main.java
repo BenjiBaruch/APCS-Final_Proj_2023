@@ -5,14 +5,18 @@ import java.awt.event.KeyListener;
 
 public class Main implements KeyListener {
     JFrame window;
-    GamePanel panel;
-    GameLoop loop;
+    GamePanel gamePanel;
+    HomePanel homePanel;
+    EndPanel endPanel;
+    GameLoop gameLoop;
     Timer timer;
+    int menu;
     public Main() {
+        menu = 0;
         createWindow();
         timer = new Timer();
-        loop = new GameLoop(panel);
-        timer.scheduleAtFixedRate(loop, 25L, 25L);
+        gameLoop = new GameLoop(gamePanel);
+        timer.scheduleAtFixedRate(gameLoop, 25L, 25L);
     }
     public void createWindow() {
         window = new JFrame();
@@ -20,11 +24,17 @@ public class Main implements KeyListener {
         window.setResizable(true);
         window.setTitle("Word Guessing Game (original)");
 
-        panel = new GamePanel(window);
-        panel.setFocusable(true);
-        panel.grabFocus();
-        panel.addKeyListener(this);
-        window.add(panel);
+        gamePanel = new GamePanel(window);
+        gamePanel.setFocusable(true);
+        gamePanel.addKeyListener(this);
+        homePanel = new HomePanel();
+        homePanel.setFocusable(true);
+        homePanel.addKeyListener(this);
+        endPanel = new EndPanel();
+        endPanel.setFocusable(true);
+        endPanel.addKeyListener(this);
+        homePanel.grabFocus();
+        window.add(homePanel);
         window.setSize(800, 650);
 
         window.setLocationRelativeTo(null);
@@ -41,10 +51,12 @@ public class Main implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();
-        if ('A' <= (char)code && (char)code <= 'Z') loop.appendChar((char)code);
-        else if ('a' <= (char)code && (char)code <= 'z') loop.appendChar((char)code - ('a'-'A'));
-        else if (code == 8 || code == 37 || code == 65483) loop.backspace();
-        else if (code == 9 || code == 10 || code == 32 || code == 40) loop.guessWord();
+        if (menu == 1) {
+            if ('A' <= (char)code && (char)code <= 'Z') gameLoop.appendChar((char)code);
+            else if ('a' <= (char)code && (char)code <= 'z') gameLoop.appendChar((char)code - ('a'-'A'));
+            else if (code == 8 || code == 37 || code == 65483) gameLoop.backspace();
+            else if (code == 9 || code == 10 || code == 32 || code == 40) gameLoop.guessWord();
+        }
     }
 
     @Override

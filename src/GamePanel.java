@@ -15,17 +15,19 @@ public class GamePanel extends JPanel {
     final Color TRANSPARENT = new Color(0, 0, 0, 0);
 
     public GamePanel(JFrame window) {
-        prompt = "**PLACEHOLDER";
-        guess = "";
         this.window = window;
-        timeLimit = 10;
-        time = 0;
-        rounds = -2;
         try {
             font = Font.createFont(Font.TRUETYPE_FONT, new File("data/Silvera Peach.otf"));
         } catch (IOException | FontFormatException e) {
             font = Font.getFont(Font.SERIF);
         }
+    }
+    public void newGame() {
+        prompt = "**PLACEHOLDER";
+        guess = "";
+        timeLimit = 10;
+        time = 0;
+        rounds = -2;
     }
 
     public void newRound(String prompt, double timeLimit) {
@@ -97,7 +99,7 @@ public class GamePanel extends JPanel {
         Dimension d = window.getSize();
         wX = d.width;
         wY = d.height;
-        wSize = Math.min(wX, wY) ;
+        wSize = Math.min(wX, wY);
         Graphics2D g2 = (Graphics2D) g;
         int pSize = (int)((double) wSize * 0.8 / Math.max(6, prompt.length()));
         int pX = (int)((double) pSize * prompt.length() * -0.6D) + wX/2;
@@ -106,8 +108,6 @@ public class GamePanel extends JPanel {
         int segmentsTotal = 150;
         int segmentsCurrent = (int)(segmentsTotal * (1 - (time / timeLimit)));
         int radius = (int)(wSize * 0.4);
-        final double halfpi = 1.57079633D;
-        final double twopi = 6.28318531D;
 
         // Configure g2
         g2.setFont(font.deriveFont(pSize * 0.8F));
@@ -152,12 +152,16 @@ public class GamePanel extends JPanel {
 
         // Prompt
         g2.setStroke(new BasicStroke(4));
+        FontMetrics metrics = g2.getFontMetrics(g2.getFont()); // https://stackoverflow.com/questions/27706197/how-can-i-center-graphics-drawstring-in-java
         for (int i = 0; i < prompt.length(); i++) {
+            String letter = prompt.substring(i,i+1);
             g2.setColor(promptColors[i]);
             g2.fillRoundRect(pX + (int)(pSize * 1.2 * i), pY, pSize, pSize, pArc, pArc);
             g2.setColor(Color.BLACK);
             g2.drawRoundRect(pX + (int)(pSize * 1.2 * i), pY, pSize, pSize, pArc, pArc);
-            g2.drawString(prompt.substring(i,i+1), pX + (int)(pSize * 1.2 * (i + 0.24)), pY + (int)(pSize * 0.75));
+            g2.drawString(letter,
+                    pX + (int)(pSize * 1.2 * (i + 0.4)) - (metrics.stringWidth(letter) / 2),
+                    pY + (int)(pSize * 0.75));
         }
 
         // Round counter
@@ -170,12 +174,16 @@ public class GamePanel extends JPanel {
         pArc = pSize / 6;
         g2.setStroke(new BasicStroke(3));
         g2.setFont(font.deriveFont(pSize * 0.8f));
+        metrics = g2.getFontMetrics(g2.getFont());
         for (int i = 0; i < guess.length(); i++) {
+            String letter = guess.substring(i,i+1);
             g2.setColor(guessColors[i]);
             g2.fillRoundRect(pX + (int)(pSize * 1.2 * i), pY, pSize, pSize, pArc, pArc);
             g2.setColor(Color.BLACK);
             g2.drawRoundRect(pX + (int)(pSize * 1.2 * i), pY, pSize, pSize, pArc, pArc);
-            g2.drawString(guess.substring(i,i+1), pX + (int)(pSize * 1.2 * (i + 0.24)), pY + (int)(pSize * 0.75));
+            g2.drawString(letter,
+                    pX + (int)(pSize * 1.2 * (i + 0.4)) - (metrics.stringWidth(letter) / 2),
+                    pY + (int)(pSize * 0.75));
         }
     }
 }
