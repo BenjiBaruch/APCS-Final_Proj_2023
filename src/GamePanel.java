@@ -12,10 +12,12 @@ public class GamePanel extends JPanel {
     int wX, wY, wSize, rounds;
     Font font;
     JFrame window;
+    Main game;
     final Color TRANSPARENT = new Color(0, 0, 0, 0);
 
-    public GamePanel(JFrame window) {
+    public GamePanel(JFrame window, Main game) {
         this.window = window;
+        this.game = game;
         try {
             font = Font.createFont(Font.TRUETYPE_FONT, new File("data/Silvera Peach.otf"));
         } catch (IOException | FontFormatException e) {

@@ -72,4 +72,8 @@ public class GameLoop extends TimerTask {
             panel.setGuess("");
         }
     }
+
+    public void escape() {
+        cancel();
+    }
 }

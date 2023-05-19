@@ -24,13 +24,13 @@ public class Main implements KeyListener {
         window.setResizable(true);
         window.setTitle("Word Guessing Game (original)");
 
-        gamePanel = new GamePanel(window);
+        gamePanel = new GamePanel(window, this);
         gamePanel.setFocusable(true);
         gamePanel.addKeyListener(this);
-        homePanel = new HomePanel();
+        homePanel = new HomePanel(window, this);
         homePanel.setFocusable(true);
         homePanel.addKeyListener(this);
-        endPanel = new EndPanel();
+        endPanel = new EndPanel(window, this);
         endPanel.setFocusable(true);
         endPanel.addKeyListener(this);
         homePanel.grabFocus();
@@ -39,6 +39,9 @@ public class Main implements KeyListener {
 
         window.setLocationRelativeTo(null);
         window.setVisible(true);
+    }
+    public void startGame() {
+
     }
     public static void main(String[] args) {
         new Main();
@@ -51,11 +54,18 @@ public class Main implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();
+        if (menu == 0) {
+            if (code == 37 || code == 38 || code == 65 || code == 87) homePanel.up();
+            else if (code == 39 || code == 40 || code == 68 || code == 83) homePanel.down();
+            else if (code == 9 || code == 10 || code == 32) homePanel.select();
+            else if (code == 27) homePanel.exit();
+        }
         if (menu == 1) {
             if ('A' <= (char)code && (char)code <= 'Z') gameLoop.appendChar((char)code);
             else if ('a' <= (char)code && (char)code <= 'z') gameLoop.appendChar((char)code - ('a'-'A'));
             else if (code == 8 || code == 37 || code == 65483) gameLoop.backspace();
             else if (code == 9 || code == 10 || code == 32 || code == 40) gameLoop.guessWord();
+            else if (code == 27) gameLoop.escape();
         }
     }
 
