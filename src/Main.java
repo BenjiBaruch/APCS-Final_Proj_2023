@@ -1,9 +1,14 @@
+import java.awt.*;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.Timer;
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-public class Main implements KeyListener {
+public class Main implements KeyListener, ComponentListener {
     JFrame window;
     GamePanel gamePanel;
     HomePanel homePanel;
@@ -11,26 +16,33 @@ public class Main implements KeyListener {
     GameLoop gameLoop;
     Timer timer;
     int menu;
+    Font font;
     public Main() {
         menu = 0;
+        try {
+            font = Font.createFont(Font.TRUETYPE_FONT, new File("data/Silvera Peach.otf"));
+        } catch (IOException | FontFormatException e) {
+            font = Font.getFont(Font.SERIF);
+        }
         createWindow();
         timer = new Timer();
         gameLoop = new GameLoop(gamePanel);
         timer.scheduleAtFixedRate(gameLoop, 25L, 25L);
     }
-    public void createWindow() {
+    private void createWindow() {
         window = new JFrame();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setResizable(true);
         window.setTitle("Word Guessing Game (original)");
+        window.addComponentListener(this);
 
-        gamePanel = new GamePanel(window, this);
+        gamePanel = new GamePanel(window, this, font);
         gamePanel.setFocusable(true);
         gamePanel.addKeyListener(this);
-        homePanel = new HomePanel(window, this);
+        homePanel = new HomePanel(window, this, font);
         homePanel.setFocusable(true);
         homePanel.addKeyListener(this);
-        endPanel = new EndPanel(window, this);
+        endPanel = new EndPanel(window, this, font);
         endPanel.setFocusable(true);
         endPanel.addKeyListener(this);
         homePanel.grabFocus();
@@ -71,5 +83,29 @@ public class Main implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
+    }
+
+    @Override
+    public void componentResized(ComponentEvent e) {
+        try {
+            homePanel.resizeTiles();
+        } catch (NullPointerException theLetter_E_isAlreadyTaken) {
+            System.out.println("homePanel not found");
+        }
+    }
+
+    @Override
+    public void componentMoved(ComponentEvent e) {
+
+    }
+
+    @Override
+    public void componentShown(ComponentEvent e) {
+
+    }
+
+    @Override
+    public void componentHidden(ComponentEvent e) {
+
     }
 }

@@ -35,7 +35,7 @@ public class GameLoop extends TimerTask {
         }
     }
 
-    public void newRound() {
+    private void newRound() {
         // Resets guess, time limit, and calls panel newRound method.
         guess = new char[64];
         head = 0;

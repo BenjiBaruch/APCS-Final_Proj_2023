@@ -15,14 +15,10 @@ public class GamePanel extends JPanel {
     Main game;
     final Color TRANSPARENT = new Color(0, 0, 0, 0);
 
-    public GamePanel(JFrame window, Main game) {
+    public GamePanel(JFrame window, Main game, Font font) {
         this.window = window;
         this.game = game;
-        try {
-            font = Font.createFont(Font.TRUETYPE_FONT, new File("data/Silvera Peach.otf"));
-        } catch (IOException | FontFormatException e) {
-            font = Font.getFont(Font.SERIF);
-        }
+        this.font = font;
     }
     public void newGame() {
         prompt = "**PLACEHOLDER";
@@ -64,7 +60,7 @@ public class GamePanel extends JPanel {
         this.time = time;
     }
 
-    private Color getPastel() {
+    public static Color getPastel() {
         // Returns pastel color (random color normalized to 0.75-1.00 interval)
 
         // Get random doubles between 0 and 1 for r, g, and b
