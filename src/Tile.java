@@ -32,6 +32,8 @@ public class Tile {
         this.x = x;
         this.y = y;
         this.r = r;
+        if (x < 0) System.out.println("frick " + x);
+        if (y < 0) System.out.println("frack " + y);
         double offset = size/2D;
         transform = new AffineTransform();
         transform.rotate(r, x+offset, y+offset);
