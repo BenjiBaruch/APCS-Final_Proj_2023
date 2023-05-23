@@ -20,7 +20,7 @@ public class Tile {
     int x, y;
     double r;
     AffineTransform transform;
-    RoundRectangle2D rect;
+    RoundRectangle2D.Double rect;
 
     public Tile(Color color, String letter) {
         this.color = color;
@@ -34,9 +34,6 @@ public class Tile {
         this.r = r;
         if (x < 0) System.out.println("frick " + x);
         if (y < 0) System.out.println("frack " + y);
-        double offset = size/2D;
-        transform = new AffineTransform();
-        transform.rotate(r, x+offset, y+offset);
         if (size > 0) {
             rect = new RoundRectangle2D.Double(x, y, size, size, size / 6D, size / 6D);
         }
@@ -46,7 +43,10 @@ public class Tile {
         if (size > 0) rect = new RoundRectangle2D.Double(x, y, size, size, size/6D, size/6D);
     }
 
-    public AffineTransform getTransform(int size) {
+    public AffineTransform getTransform(int size, int x, int y) {
+        double offset = size/2D;
+        transform = new AffineTransform();
+        transform.rotate(r, x+offset, y+offset);
         return transform;
     }
 
