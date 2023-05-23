@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.RoundRectangle2D;
+import java.util.Arrays;
 
 public class HomePanel extends JPanel {
     // Selected: 0 = new game; 1 = instructions; 2 = leaderboard; 3 = quit
@@ -9,7 +10,9 @@ public class HomePanel extends JPanel {
     JFrame window;
     Main game;
     Font font;
-    Tile[] tiles;
+    double[][] tilePos;
+    Color[] tileColors;
+    String[] tileChars;
     int sizeFactor = 8;
     public HomePanel(JFrame window, Main game, Font font) {
         this.game = game;
@@ -18,39 +21,46 @@ public class HomePanel extends JPanel {
         selected = 0;
         generateTiles();
     }
-    private boolean sufficientDistance(int x1, int y1, int x2, int y2, int threshold) {
+    private boolean sufficientDistance(double x1, double y1, double x2, double y2, double threshold) {
         return (x1-x2)*(x1-x2) + (y2-y1)*(y2-y1) > threshold * threshold;
     }
     private void generateTiles() {
         int tileCount = 10;
-        tiles = new Tile[tileCount];
-        int separation = Math.min(window.getSize().width, window.getSize().height) / sizeFactor;
-        int size = Math.min(window.getSize().width, window.getSize().height) / sizeFactor;
+        tilePos = new double[tileCount][3];
+        tileColors = new Color[tileCount];
+        tileChars = new String[tileCount];
         for (int tile = 0; tile < tileCount; tile++) {
             boolean posFound = false;
-            int x, y;
+            double x, y;
             x = y = "I get an error if I don't do this for some reason".hashCode();
             FindXY:
             for (int i = 0; i < 40; i++) {
-                x = (int)(Math.random()*900)+50;
-                y = (int)(Math.random()*900)+50;
-                // if ((x-500)*(x-500)+(y-500)*(y-500) < 1000) continue;
-                // for (int j = 0; j < tile; j++)
-                //     if (!sufficientDistance(x, y, tiles[j].getX(), tiles[j].getY(), separation))
-                //         continue FindXY;
+                x = Math.random();
+                y = Math.random();
+                if ((x-.5D)*(x-.5D)+(y-.5D)*(y-.5D) < .5D) continue;
+                for (double[] posArr : tilePos) if (posArr != null)
+                    if (!sufficientDistance(x, y, posArr[0], posArr[1], .05D))
+                        continue FindXY;
                 posFound = true;
                 break;
             }
             if (!posFound) break;
             char c = (char)((int)(Math.random()*26)+'A');
             double r = Math.random() - 0.5;
-            tiles[tile] = new Tile(GamePanel.getPastel(), String.valueOf(c), x, y, r, size);
+            double[] pos = {x, y, r};
+            System.out.println("iuzDBGuiB ahfsSH EHdzfSGD");
+            tilePos[tile] = pos;
+            System.out.println(Arrays.toString(tilePos[tile]));
+            tileColors[tile] = GamePanel.getPastel();
+            System.out.println(tileColors[tile]);
+            tileChars[tile] = String.valueOf(c);
+            System.out.println(tileChars[tile]);
         }
     }
 
-    public void resizeTiles() {
-        for (Tile tile : tiles) if (tile != null) tile.resize(Math.min(window.getSize().width, window.getSize().height) / sizeFactor);
-    }
+    // public void resizeTiles() {
+    //     for (Tile tile : tiles) if (tile != null) tile.resize(Math.min(window.getSize().width, window.getSize().height) / sizeFactor);
+    // }
 
     public void up() {
         if (selected == 0) selected = 3;
@@ -78,20 +88,23 @@ public class HomePanel extends JPanel {
         Font buttonFont = font.deriveFont(wX/50F);
         int size = Math.min(wX, wY) / sizeFactor;
 
-        for (Tile tile : tiles) if (tile != null) {
-            g2.setColor(tile.getColor());
-            int tX = tile.getX()*wX/2000;
-            int tY = tile.getY()*wY/2000;
+        for (int i = 0; i < tilePos.length; i++) if (tilePos[i] != null) {
+            System.out.println("iter " + i);
+            System.out.println(Arrays.toString(tilePos));
+            System.out.println(Arrays.toString(tileColors));
+            System.out.println(Arrays.toString(tileChars));
+            g2.setColor(tileColors[i]);
+            int tX = (int)(tilePos[i][0]*(wX-size*2));
+            int tY = (int)(tilePos[i][1]*(wY-size*2));
             if (tX < 0 || tY < 0 || tX>wX || tY>wY) System.out.println("frick " + tX + " frack " + tY);
             RoundRectangle2D.Double rect = new RoundRectangle2D.Double(tX, tY, size, size, size/6D, size/6D);
             AffineTransform transform = new AffineTransform();
-            transform.rotate(tile.getR(), tX+size/2D, tY+size/2D);
+            transform.rotate(tilePos[i][2], tX+size/2D, tY+size/2D);
             Shape rect2 = transform.createTransformedShape(rect);
             g2.fill(rect2);
             g2.setColor(Color.BLACK);
             g2.draw(rect2);
-            g2.drawString(tile.getLetter(), tX, tY);
-            g2.rotate(-tile.getR());
+            g2.drawString(tileChars[i], tX, tY);
         }
     }
 }

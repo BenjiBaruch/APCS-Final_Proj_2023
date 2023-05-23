@@ -87,11 +87,11 @@ public class Main implements KeyListener, ComponentListener {
 
     @Override
     public void componentResized(ComponentEvent e) {
-        try {
-            homePanel.resizeTiles();
-        } catch (NullPointerException theLetter_E_isAlreadyTaken) {
-            System.out.println("homePanel not found");
-        }
+        // try {
+        //     homePanel.resizeTiles();
+        // } catch (NullPointerException theLetter_E_isAlreadyTaken) {
+        //     System.out.println("homePanel not found");
+        // }
     }
 
     @Override
