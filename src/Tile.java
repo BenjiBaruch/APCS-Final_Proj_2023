@@ -4,93 +4,16 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 
 public class Tile {
+    public int x, y;
+    public double r;
+    public Color c;
+    public String s;
 
-    /*
-
-    THIS IS WHY WE NEED STRUCTS
-
-
-     */
-
-
-
-
-    Color color;
-    String letter;
-    int x, y;
-    double r;
-    AffineTransform transform;
-    RoundRectangle2D.Double rect;
-
-    public Tile(Color color, String letter) {
-        this.color = color;
-        this.letter = letter;
-    }
-    public Tile(Color color, String letter, int x, int y, double r, int size) {
-        this.color = color;
-        this.letter = letter;
+    public Tile(int x, int y, double r, Color c, String s) {
         this.x = x;
         this.y = y;
         this.r = r;
-        if (x < 0) System.out.println("frick " + x);
-        if (y < 0) System.out.println("frack " + y);
-        if (size > 0) {
-            rect = new RoundRectangle2D.Double(x, y, size, size, size / 6D, size / 6D);
-        }
-    }
-
-    public void resize(int size) {
-        if (size > 0) rect = new RoundRectangle2D.Double(x, y, size, size, size/6D, size/6D);
-    }
-
-    public AffineTransform getTransform(int size, int x, int y) {
-        double offset = size/2D;
-        transform = new AffineTransform();
-        transform.rotate(r, x+offset, y+offset);
-        return transform;
-    }
-
-    public RoundRectangle2D getRect() {
-        return rect;
-    }
-
-    public Color getColor() {
-        return color;
-    }
-
-    public String getLetter() {
-        return letter;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public double getR() {
-        return r;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
-    public void setLetter(String letter) {
-        this.letter = letter;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public void setR(double r) {
-        this.r = r;
+        this.c = c;
+        this.s = s;
     }
 }
