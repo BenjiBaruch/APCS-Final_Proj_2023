@@ -78,8 +78,9 @@ public class HomePanel extends JPanel {
         // help from http://devmag.org.za/2009/05/03/poisson-disk-sampling/
         final int width = window.getWidth();
         final int height = window.getHeight();
-        final int minDistance = 20;
+        final int minDistance = 80;
         final int count = 27;
+        final int size = Math.min(width, height) / sizeFactor;
         final double cellSize = minDistance / Math.sqrt(2);
 
         final int gridW = (int)Math.ceil(width/cellSize);
@@ -90,7 +91,9 @@ public class HomePanel extends JPanel {
         ArrayList<Point> pl = new ArrayList<>(27);
         ArrayList<Point> sl = new ArrayList<>(27);
 
-        Point p1 = new Point((int)(Math.random()*width), (int)(Math.random()*height));
+        Point p1 = null;
+        while (p1 == null || inNeighborhood(grid, p1, minDistance, cellSize, width/2, height/2))
+            p1 = new Point((int)(Math.random()*width), (int)(Math.random()*height));
         pl.add(p1);
         sl.add(p1);
 
@@ -100,9 +103,9 @@ public class HomePanel extends JPanel {
         while (!pl.isEmpty()) {
             Point p2 = pl.remove((int)(Math.random()*pl.size()));
             for (int i = 0; i < count; i++) {
-                Point p3 = newPoint(p2, minDistance);
+                Point p3 = newPoint(p2, minDistance, size / 2);
                 if (p3.x > 0 && p3.x < width && p3.y > 0 && p3.y < height &&
-                    !inNeighborhood(grid, p3, minDistance, cellSize)) {
+                    !inNeighborhood(grid, p3, minDistance, cellSize, width/2, height/2)) {
                     pl.add(p3);
                     sl.add(p3);
                     Point fp3 = formatPoint(p3, cellSize);
@@ -119,7 +122,7 @@ public class HomePanel extends JPanel {
         return new Point(x, y);
     }
 
-    private Point newPoint(Point p, int minDistance) {
+    private Point newPoint(Point p, int minDistance, int hS) {
         double r = minDistance * (Math.random() + 1);
         double theta = 2 * Math.PI * Math.random();
         return new Point(
@@ -128,10 +131,11 @@ public class HomePanel extends JPanel {
         );
     }
 
-    private boolean inNeighborhood(Point[][] grid, Point p1, int minDistance, double cellSize) {
+    private boolean inNeighborhood(Point[][] grid, Point p1, int minDistance, double cellSize, int hW, int hH) {
         Point gridPoint = formatPoint(p1, cellSize);
-        for (int ix = gridPoint.x-2; ix <= gridPoint.x+2; ix++)
-            for (int iy = gridPoint.y-2; iy <= gridPoint.y+2; iy++)
+        if ((p1.x-hW)*(p1.x-hW) + (p1.y-hH)*(p1.y-hH) < Math.min(hW,hH)*Math.min(hW,hH)*2/3) return true;
+        for (int ix = Math.max(0, gridPoint.x-2); ix <= Math.min(grid.length-1, gridPoint.x+2); ix++)
+            for (int iy = Math.max(0, gridPoint.y-2); iy <= Math.min(grid[0].length-1, gridPoint.y+2); iy++)
                 if (grid[ix][iy] != null) {
                     Point p2 = grid[ix][iy];
                     if ((p1.x-p2.x)*(p1.x-p2.x) + (p1.y-p2.y)*(p1.y-p2.y) < minDistance*minDistance)
@@ -161,13 +165,15 @@ public class HomePanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         g2.setStroke(new BasicStroke(4));
-        g2.setFont(font);
 
         int wX = window.getSize().width;
         int wY = window.getSize().height;
 
         Font titleFont = font.deriveFont(wX/20F);
         Font buttonFont = font.deriveFont(wX/50F);
+        Font pieceFont = font.deriveFont((float)wX/sizeFactor * .8F);
+        g2.setFont(pieceFont);
+        FontMetrics metrics = g2.getFontMetrics(g2.getFont());
         int size = Math.min(wX, wY) / sizeFactor;
 
         for (Tile t : tiles) if (t != null) {
@@ -185,7 +191,7 @@ public class HomePanel extends JPanel {
             g2.fill(rect2);
             g2.setColor(Color.BLACK);
             g2.draw(rect2);
-            // g2.drawString(tileChars[i], tX, tY);
+            g2.drawString(t.s, t.x - metrics.stringWidth(t.s)/2, t.y);
         }
     }
 }

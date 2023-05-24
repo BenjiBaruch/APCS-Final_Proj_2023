@@ -18,7 +18,7 @@ public class Main implements KeyListener, ComponentListener {
     int menu;
     Font font;
     public Main() {
-        menu = 0;
+        menu = 1;
         try {
             font = Font.createFont(Font.TRUETYPE_FONT, new File("data/Silvera Peach.otf"));
         } catch (IOException | FontFormatException e) {
@@ -36,6 +36,7 @@ public class Main implements KeyListener, ComponentListener {
         window.setTitle("Word Guessing Game (original)");
         window.addComponentListener(this);
 
+        window.setSize(800, 650);
         gamePanel = new GamePanel(window, this, font);
         gamePanel.setFocusable(true);
         gamePanel.addKeyListener(this);
@@ -46,8 +47,7 @@ public class Main implements KeyListener, ComponentListener {
         endPanel.setFocusable(true);
         endPanel.addKeyListener(this);
         homePanel.grabFocus();
-        window.add(homePanel);
-        window.setSize(800, 650);
+        window.add(gamePanel);
 
         window.setLocationRelativeTo(null);
         window.setVisible(true);
