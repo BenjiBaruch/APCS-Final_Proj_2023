@@ -18,7 +18,7 @@ public class Main implements KeyListener, ComponentListener {
     int menu;
     Font font;
     public Main() {
-        menu = 1;
+        menu = 0;
         try {
             font = Font.createFont(Font.TRUETYPE_FONT, new File("data/Silvera Peach.otf"));
         } catch (IOException | FontFormatException e) {
@@ -27,7 +27,7 @@ public class Main implements KeyListener, ComponentListener {
         createWindow();
         timer = new Timer();
         gameLoop = new GameLoop(gamePanel);
-        timer.scheduleAtFixedRate(gameLoop, 25L, 25L);
+        if (menu == 1) timer.scheduleAtFixedRate(gameLoop, 25L, 25L);
     }
     private void createWindow() {
         window = new JFrame();
@@ -47,7 +47,8 @@ public class Main implements KeyListener, ComponentListener {
         endPanel.setFocusable(true);
         endPanel.addKeyListener(this);
         homePanel.grabFocus();
-        window.add(gamePanel);
+        if (menu == 1) window.add(gamePanel);
+        else window.add(homePanel);
 
         window.setLocationRelativeTo(null);
         window.setVisible(true);

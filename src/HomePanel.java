@@ -133,7 +133,7 @@ public class HomePanel extends JPanel {
 
     private boolean inNeighborhood(Point[][] grid, Point p1, int minDistance, double cellSize, int hW, int hH) {
         Point gridPoint = formatPoint(p1, cellSize);
-        if ((p1.x-hW)*(p1.x-hW) + (p1.y-hH)*(p1.y-hH) < Math.min(hW,hH)*Math.min(hW,hH)*2/3) return true;
+        if ((p1.x-hW)*(p1.x-hW) + (p1.y-hH)*(p1.y-hH) < Math.min(hW,hH)*Math.min(hW,hH)*3/5) return true;
         for (int ix = Math.max(0, gridPoint.x-2); ix <= Math.min(grid.length-1, gridPoint.x+2); ix++)
             for (int iy = Math.max(0, gridPoint.y-2); iy <= Math.min(grid[0].length-1, gridPoint.y+2); iy++)
                 if (grid[ix][iy] != null) {
@@ -161,26 +161,38 @@ public class HomePanel extends JPanel {
     public void exit() {
 
     }
+    public void drawButton(Graphics2D g2, String text, Font f, int arcSize, int y) {
+        int wX = window.getSize().width;
+        int wY = window.getSize().height;
+        g2.setFont(f);
+        FontMetrics metrics = g2.getFontMetrics(f);
+        g2.setColor(GamePanel.getPastel());
+        g2.fillRoundRect(wX/2-(metrics.stringWidth(text)*3/5), y, metrics.stringWidth(text)*6/5, metrics.getHeight()*6/5, arcSize, arcSize);
+        g2.setColor(Color.BLACK);
+        g2.drawRoundRect(wX/2-(metrics.stringWidth(text)*3/5), y, metrics.stringWidth(text)*6/5, metrics.getHeight()*6/5, arcSize, arcSize);
+        g2.drawString(text, (wX-metrics.stringWidth(text))/2, y+metrics.getHeight()*7/8);
+
+    }
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        // Set vars && initialize Graphics2D
         Graphics2D g2 = (Graphics2D) g;
         g2.setStroke(new BasicStroke(4));
 
         int wX = window.getSize().width;
         int wY = window.getSize().height;
 
+        // Set fonts
         Font titleFont = font.deriveFont(wX/20F);
         Font buttonFont = font.deriveFont(wX/50F);
-        Font pieceFont = font.deriveFont((float)wX/sizeFactor * .8F);
+        Font pieceFont = font.deriveFont((float)wX/sizeFactor * .6F);
         g2.setFont(pieceFont);
         FontMetrics metrics = g2.getFontMetrics(g2.getFont());
         int size = Math.min(wX, wY) / sizeFactor;
 
+        // Draw tiles
         for (Tile t : tiles) if (t != null) {
-            // System.out.println("iter " + i);
-            // System.out.println(Arrays.toString(tilePos));
-            // System.out.println(Arrays.toString(tileColors));
-            // System.out.println(Arrays.toString(tileChars));
             g2.setColor(t.c);
             if (t.x < 0 || t.y < 0 || t.x > wX || t.y > wY)
                 System.out.println("frick " + t.x + " frack " + t.y);
@@ -191,7 +203,16 @@ public class HomePanel extends JPanel {
             g2.fill(rect2);
             g2.setColor(Color.BLACK);
             g2.draw(rect2);
-            g2.drawString(t.s, t.x - metrics.stringWidth(t.s)/2, t.y);
+            int sx = t.x - metrics.stringWidth(t.s)/2 + (int)(size/2 * Math.cos(t.r));
+            int sy = t.y + metrics.getHeight()/3 + size/2;
+            g2.drawString(t.s, sx, sy);
         }
+
+        // Draw text
+        drawButton(g2, "WORD GAME OF DOOM!!!", titleFont, size/6, wY/3);
+        drawButton(g2, "PLAY", buttonFont, size/6, wY/3 + metrics.getHeight() * 5 / 4);
+        drawButton(g2, "INSTRUCTIONS", buttonFont, size/6, wY/3 + metrics.getHeight() * 5 / 2);
+        drawButton(g2, "LEADERBOARD", buttonFont, size/6, wY/3 + metrics.getHeight() * 15 / 4);
+        drawButton(g2, "QUIT", buttonFont, size/6, wY/3 + metrics.getHeight() * 5);
     }
 }

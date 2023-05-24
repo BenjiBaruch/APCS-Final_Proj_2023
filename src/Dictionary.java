@@ -11,9 +11,11 @@ public class Dictionary {
     // Words from: https://github.com/dwyl/english-words
     HashSet<String> validWords;
     HashSet<String> usedWords;
+    HashSet<String> profaneWords;
     String[] promptList;
 
     public Dictionary() {
+        loadProfaneList("data/profane.txt");
         loadWordList("data/words_alpha.txt");
         // loadPromptList("C:\\Users\\ultra\\IdeaProjects\\APCS Final Proj 2023\\data\\prompts.txt");
         autoPromptList("data/20k.txt");
@@ -37,6 +39,24 @@ public class Dictionary {
             System.out.println("I/O error");
         }
         System.out.println("Word List Length:" + validWords.size());
+    }
+    public void loadProfaneList(String path) {
+        // Loads word list from txt file
+        profaneWords = new HashSet<>(5000);
+        try {
+            // Modified from previous project (chess)
+            BufferedReader in = new BufferedReader(new FileReader(path));
+            String entry = in.readLine();
+            while (entry != null) {
+                profaneWords.add(entry.strip().toUpperCase());
+                entry = in.readLine();
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found");
+        } catch (IOException e) {
+            System.out.println("I/O error");
+        }
+        System.out.println("Profane List Length:" + profaneWords.size());
     }
     public void autoPromptList(String path) {
         // Fills prompt list with randomly generated prompts of increasing difficulty
@@ -102,17 +122,19 @@ public class Dictionary {
                     }
                 }
             }
+
+            if (profaneWords.contains(prompt)) continue;
             for (ArrayList<String> row : prompts) if (row.contains(prompt)) continue CreatePromptList;
 
             int level;
-            if (count < 10) continue;
+            if (count < 5) continue;
             else if (count > 960) level = 0;
-            else if (count > 480) level = 1;
-            else if (count > 240) level = 2;
-            else if (count > 120) level = 3;
-            else if (count > 80) level = 4;
-            else if (count > 50) level = 5;
-            else if (count > 20) level = 6;
+            else if (count > 240) level = 1;
+            else if (count > 80) level = 2;
+            else if (count > 50) level = 3;
+            else if (count > 30) level = 4;
+            else if (count > 20) level = 5;
+            else if (count > 10) level = 6;
             else level = 7;
 
             if (level < 3) for (int i = 0; i < prompt.length(); i++) if (prompt.charAt(i) == '_') continue CreatePromptList;
