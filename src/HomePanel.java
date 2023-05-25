@@ -2,9 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.RoundRectangle2D;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
+import java.util.*;
 
 public class HomePanel extends JPanel {
     // Selected: 0 = new game; 1 = instructions; 2 = leaderboard; 3 = quit
@@ -14,13 +12,18 @@ public class HomePanel extends JPanel {
     Font font;
     double[][] tilePos;
     Color[] tileColors;
+    Color[] buttonColors;
     String[] tileChars;
     Tile[] tiles;
+    HashMap<Character, Integer> charCounts;
     int sizeFactor = 8;
-    public HomePanel(JFrame window, Main game, Font font) {
+    public HomePanel(JFrame window, Main game, Font font, HashMap<Character, Integer> charCounts) {
         this.game = game;
         this.window = window;
         this.font = font;
+        this.charCounts = charCounts;
+        buttonColors = new Color[5];
+        for (int i = 0; i < 5; i++) buttonColors[i] = GamePanel.getPastel();
         selected = 0;
         generateTiles2();
     }
@@ -64,13 +67,20 @@ public class HomePanel extends JPanel {
     private void generateTiles2() {
         ArrayList<Point> positions = getPoints();
         tiles = new Tile[positions.size()];
+        int offset = window.getWidth() / sizeFactor / 2;
+        Character[] chars = new Character[50];
+        int charLen = 0;
+        for (char c = 'A'; c <= 'Z'; c++) for (int i = 0; i < charCounts.get(c); i++) chars[charLen++] = c;
+        chars = Arrays.copyOfRange(chars, 0, charLen);
+        Collections.shuffle(Arrays.asList(chars));
+        System.out.println(Arrays.toString(chars));
         for (int i = 0; i < tiles.length; i++) {
             tiles[i] = new Tile(
-                    positions.get(i).x,
-                    positions.get(i).y,
+                    positions.get(i).x - offset,
+                    positions.get(i).y - offset,
                     Math.random() - 0.5,
                     GamePanel.getPastel(),
-                    String.valueOf((char)((int)(Math.random()*26)+'A')));
+                    i < charLen ? String.valueOf(chars[i]) : String.valueOf((char)((int)(Math.random()*26)+'A')));
         }
     }
 
@@ -161,41 +171,30 @@ public class HomePanel extends JPanel {
     public void exit() {
 
     }
-    public void drawButton(Graphics2D g2, String text, Font f, int arcSize, int y) {
+    public void drawButton(Graphics2D g2, String text, Font f, int arcSize, int y, int i) {
         int wX = window.getSize().width;
         int wY = window.getSize().height;
         g2.setFont(f);
         FontMetrics metrics = g2.getFontMetrics(f);
-        g2.setColor(GamePanel.getPastel());
+        g2.setColor(buttonColors[i]);
         g2.fillRoundRect(wX/2-(metrics.stringWidth(text)*3/5), y, metrics.stringWidth(text)*6/5, metrics.getHeight()*6/5, arcSize, arcSize);
         g2.setColor(Color.BLACK);
         g2.drawRoundRect(wX/2-(metrics.stringWidth(text)*3/5), y, metrics.stringWidth(text)*6/5, metrics.getHeight()*6/5, arcSize, arcSize);
         g2.drawString(text, (wX-metrics.stringWidth(text))/2, y+metrics.getHeight()*7/8);
 
     }
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
 
-        // Set vars && initialize Graphics2D
-        Graphics2D g2 = (Graphics2D) g;
+    public void drawTiles(Graphics2D g2, JFrame window) {
+        int wX = window.getWidth();
+        int wY = window.getHeight();
         g2.setStroke(new BasicStroke(4));
-
-        int wX = window.getSize().width;
-        int wY = window.getSize().height;
-
-        // Set fonts
-        Font titleFont = font.deriveFont(wX/20F);
-        Font buttonFont = font.deriveFont(wX/50F);
+        g2.setColor(Color.BLACK);
         Font pieceFont = font.deriveFont((float)wX/sizeFactor * .6F);
         g2.setFont(pieceFont);
-        FontMetrics metrics = g2.getFontMetrics(g2.getFont());
         int size = Math.min(wX, wY) / sizeFactor;
-
-        // Draw tiles
+        FontMetrics metrics = g2.getFontMetrics(g2.getFont());
         for (Tile t : tiles) if (t != null) {
             g2.setColor(t.c);
-            if (t.x < 0 || t.y < 0 || t.x > wX || t.y > wY)
-                System.out.println("frick " + t.x + " frack " + t.y);
             RoundRectangle2D.Double rect = new RoundRectangle2D.Double(t.x, t.y, size, size, size/6D, size/6D);
             AffineTransform transform = new AffineTransform();
             transform.rotate(t.r, t.x+size/2D, t.y+size/2D);
@@ -207,12 +206,47 @@ public class HomePanel extends JPanel {
             int sy = t.y + metrics.getHeight()/3 + size/2;
             g2.drawString(t.s, sx, sy);
         }
+    }
+
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        Graphics2D g2 = (Graphics2D) g;
+
+        int wX = window.getSize().width;
+        int wY = window.getSize().height;
+
+        // Set fonts
+        Font titleFont = font.deriveFont(wX/13F);
+        Font buttonFont = font.deriveFont(wX/25F);
+        Font pieceFont = font.deriveFont((float)wX/sizeFactor * .6F);
+        g2.setFont(pieceFont);
+        FontMetrics metrics = g2.getFontMetrics(g2.getFont());
+        int size = Math.min(wX, wY) / sizeFactor;
+
+        // Draw circle
+        int radius = (int)(Math.min(wX, wY) * 0.4);
+        g2.setStroke(new BasicStroke(Math.min(wX, wY) / 80F));
+        g2.setColor(Color.RED);
+        for (int i = 0; i < 150; i++) {
+            double theta1 = (2*Math.PI * i / 150) + (Math.PI / 2);
+            double theta2 = (2*Math.PI * (i + 1) / 150) + (Math.PI / 2);
+            g2.drawLine(
+                    wX/2 + (int)(radius * Math.cos(theta1)),
+                    wY/2 + (int)(radius * -Math.sin(theta1)),
+                    wX/2 + (int)(radius * Math.cos(theta2)),
+                    wY/2 + (int)(radius * -Math.sin(theta2)));
+        }
+
+        // Draw tiles
+        drawTiles(g2, window);
 
         // Draw text
-        drawButton(g2, "WORD GAME OF DOOM!!!", titleFont, size/6, wY/3);
-        drawButton(g2, "PLAY", buttonFont, size/6, wY/3 + metrics.getHeight() * 5 / 4);
-        drawButton(g2, "INSTRUCTIONS", buttonFont, size/6, wY/3 + metrics.getHeight() * 5 / 2);
-        drawButton(g2, "LEADERBOARD", buttonFont, size/6, wY/3 + metrics.getHeight() * 15 / 4);
-        drawButton(g2, "QUIT", buttonFont, size/6, wY/3 + metrics.getHeight() * 5);
+        final int upset = 50;
+        drawButton(g2, "WORD", titleFont, size/6, wY/3 - 18 - upset, 0);
+        drawButton(g2, "PLAY", buttonFont, size/6, wY/3 + metrics.getHeight() * 5 / 4 - upset, 1);
+        drawButton(g2, "INSTRUCTIONS", buttonFont, size/6, wY/3 + metrics.getHeight() * 9 / 4 - upset, 2);
+        drawButton(g2, "LEADERBOARD", buttonFont, size/6, wY/3 + metrics.getHeight() * 13 / 4 - upset, 3);
+        drawButton(g2, "QUIT", buttonFont, size/6, wY/3 + metrics.getHeight() * 17 / 4 - upset, 4);
     }
 }

@@ -3,6 +3,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Timer;
 import javax.swing.*;
 import java.awt.event.KeyEvent;
@@ -24,12 +25,32 @@ public class Main implements KeyListener, ComponentListener {
         } catch (IOException | FontFormatException e) {
             font = Font.getFont(Font.SERIF);
         }
-        createWindow();
+        EnglishDict dict = new EnglishDict();
+        createWindow(dict.getPromptList());
         timer = new Timer();
-        gameLoop = new GameLoop(gamePanel);
+        gameLoop = new GameLoop(gamePanel, dict);
         if (menu == 1) timer.scheduleAtFixedRate(gameLoop, 25L, 25L);
     }
-    private void createWindow() {
+
+    private HashMap<Character, Integer> countChars(String[] prompts) {
+        HashMap<Character, Integer> charCounts = new HashMap<>(27);
+        for (char i = 'A'; i <= 'Z'; i++) charCounts.put(i, 0);
+        charCounts.put('_', 0);
+        for (String prompt : prompts) {
+            HashMap<Character, Integer> pA = new HashMap<>(4);
+            for (char letter : prompt.toCharArray()) {
+                if (pA.containsKey(letter)) pA.replace(letter, pA.get(letter)+1);
+                else pA.put(letter, 1);
+            }
+            for (char i : pA.keySet()) if(charCounts.get(i) < pA.get(i)) charCounts.replace(i, pA.get(i));
+        }
+        System.out.println(charCounts);
+        return charCounts;
+    }
+
+    private void createWindow(String[] prompts) {
+        HashMap<Character, Integer> charCounts = countChars(prompts);
+
         window = new JFrame();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setResizable(true);
@@ -40,7 +61,7 @@ public class Main implements KeyListener, ComponentListener {
         gamePanel = new GamePanel(window, this, font);
         gamePanel.setFocusable(true);
         gamePanel.addKeyListener(this);
-        homePanel = new HomePanel(window, this, font);
+        homePanel = new HomePanel(window, this, font, charCounts);
         homePanel.setFocusable(true);
         homePanel.addKeyListener(this);
         endPanel = new EndPanel(window, this, font);

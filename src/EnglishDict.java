@@ -5,16 +5,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Locale;
 
-public class Dictionary {
+public class EnglishDict {
     // Words from: https://github.com/dwyl/english-words
     HashSet<String> validWords;
     HashSet<String> usedWords;
     HashSet<String> profaneWords;
     String[] promptList;
 
-    public Dictionary() {
+    public EnglishDict() {
         loadProfaneList("data/profane.txt");
         loadWordList("data/words_alpha.txt");
         // loadPromptList("C:\\Users\\ultra\\IdeaProjects\\APCS Final Proj 2023\\data\\prompts.txt");
@@ -209,5 +208,9 @@ public class Dictionary {
         // Grabs random prompt from list. The higher the round number, the harder the prompts (on average)
         int index = (int)(Math.random() * Math.min(round+10, promptList.length));
         return promptList[index];
+    }
+
+    public String[] getPromptList() {
+        return promptList;
     }
 }

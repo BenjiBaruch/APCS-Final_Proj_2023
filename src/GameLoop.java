@@ -9,14 +9,14 @@ public class GameLoop extends TimerTask {
     double timeStart, time, timeLimit, timePrev;
     int[] fps = new int[200];
     int frameNum = 0;
-    Dictionary dict;
+    EnglishDict dict;
     String prompt;
 
-    public GameLoop(GamePanel panel) {
+    public GameLoop(GamePanel panel, EnglishDict dict) {
         this.panel = panel;
         panel.newRound("**PLACEHOLDER", 10000000000L);
         rounds = 0;
-        dict = new Dictionary();
+        this.dict = dict;
         newRound();
     }
 
