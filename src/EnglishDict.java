@@ -214,4 +214,10 @@ public class EnglishDict {
     public String[] getPromptList() {
         return promptList;
     }
+
+    public static void main(String[] args) {
+        while (true) {
+
+        }
+    }
 }
