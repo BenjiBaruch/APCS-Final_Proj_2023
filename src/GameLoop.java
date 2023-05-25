@@ -11,18 +11,20 @@ public class GameLoop extends TimerTask {
     int frameNum = 0;
     EnglishDict dict;
     String prompt;
+    Main game;
 
-    public GameLoop(GamePanel panel, EnglishDict dict) {
+    public GameLoop(GamePanel panel, EnglishDict dict, Main game) {
         this.panel = panel;
         panel.newRound("**PLACEHOLDER", 10000000000L);
         rounds = 0;
         this.dict = dict;
+        this.game = game;
         newRound();
     }
 
     @Override
     public void run() {
-        if (time > timeLimit) cancel();
+        if (time > timeLimit) escape();
         timePrev = time;
         time = System.nanoTime() - timeStart;
         panel.update(time);
@@ -74,6 +76,6 @@ public class GameLoop extends TimerTask {
     }
 
     public void escape() {
-        cancel();
+        game.homeScreen(1);
     }
 }

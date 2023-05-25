@@ -4,24 +4,30 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class GamePanel extends JPanel {
     String prompt, guess;
     Color[] promptColors, guessColors;
     double time, timeLimit;
+    Tile[] tiles;
     int wX, wY, wSize, rounds;
     Font font;
     JFrame window;
     Main game;
-    final Color TRANSPARENT = new Color(0, 0, 0, 0);
+    long tick, animStartTick;
 
     public GamePanel(JFrame window, Main game, Font font) {
         this.window = window;
         this.game = game;
         this.font = font;
+        tick = animStartTick = 0;
     }
-    public void newGame() {
+    public void newGame(Tile[] tiles) {
         prompt = "**PLACEHOLDER";
+        this.tiles = tiles;
         guess = "";
         timeLimit = 10;
         time = 0;
@@ -41,6 +47,12 @@ public class GamePanel extends JPanel {
         this.timeLimit = timeLimit;
         guess = "";
         time = 0;
+        if (!prompt.equals("**PLACEHOLDER"))
+            startTileAnim((int)((double) wSize * 0.8 / Math.max(6, prompt.length())));
+
+        boolean killGod = true;
+        for (Tile t : tiles) if (t.inAnim) killGod = false;
+        if (killGod) System.out.println("deus est mortuus");
     }
 
     public void update() {
@@ -49,6 +61,7 @@ public class GamePanel extends JPanel {
 
     public void update(double time) {
         this.time = time;
+        tick++;
         repaint();
     }
 
@@ -79,16 +92,63 @@ public class GamePanel extends JPanel {
         return new Color((float)r, (float)g, (float)b);
     }
 
-    private Color pastelize(Color c) {
-        // Makes a color pastel by normalizing its RGB values between 0.75 and 1.0;
+    public static Color pastelize(Color c) {
+        // Makes a color pastel by normalizing its RGB values between 0.875 and 1.0;
         int min = Math.min(c.getRed(), Math.min(c.getGreen(), c.getBlue()));
         int max = Math.max(c.getRed(), Math.max(c.getGreen(), c.getBlue()));
-        int range = (max - min) * 4;
+        int range = (max - min) * 8;
         return new Color(
-                    (c.getRed() - min) / range + 192,
-                    (c.getGreen() - min) / range + 192,
-                    (c.getBlue() - min) / range + 192
+                    (c.getRed() - min) / range + 224,
+                    (c.getGreen() - min) / range + 224,
+                    (c.getBlue() - min) / range + 224
         );
+    }
+    public void startTileAnim(int pSize) {
+        int pX = (int)((double) pSize * prompt.length() * -0.6D) + wX/2;
+        int pY = wSize/2 - (int)(pSize*1.5) + wY - wSize;
+        ArrayList<Tile> inNewPrompt = new ArrayList<>(prompt.length());
+        System.out.println("p len " + prompt.length());
+        for (char letter : prompt.toCharArray()) {
+            Tile[] hasChar = new Tile[4];
+            int charCount = 0;
+            for (Tile tile : tiles)
+                if (tile.s.charAt(0) == letter && !inNewPrompt.contains(tile))
+                    hasChar[charCount++] = tile;
+            Tile addedTile = hasChar[(int)(Math.random()*charCount)];
+            inNewPrompt.add(addedTile);
+            System.out.println(charCount);
+        }
+        System.out.println("iNP size " + inNewPrompt.size());
+        for (int i = 0; i < inNewPrompt.size(); i++) {
+            Tile tile = inNewPrompt.get(i);
+            System.out.print(tile.s);
+            tile.fromX = tile.toX;
+            tile.fromY = tile.toY;
+            tile.toX = pX + (int)(pSize * 1.2 * i);
+            tile.toY = pY;
+            tile.setBools(true, true);
+            if (!tile.inAnim) System.out.println("IUGSD JNvfs ");
+            if (!Arrays.asList(tiles).contains(tile)) System.out.println("I will wage war against god");
+        }
+
+        for (Tile tile : tiles) {
+            if (!inNewPrompt.contains(tile)) {
+                if (tile.inPrompt) {
+                    tile.fromX = tile.toX;
+                    tile.fromY = tile.toY;
+                    tile.toX = tile.x;
+                    tile.toY = tile.y;
+                    tile.setBools(true, false);
+                }
+                else if (tile.inAnim){
+                    tile.setBools(false, false);
+                }
+            }
+        }
+
+        boolean killGod = true;
+        for (Tile t : tiles) if (t.inAnim) killGod = false;
+        if (killGod) System.out.println("DEUS EST MORTUUS");
     }
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -100,6 +160,7 @@ public class GamePanel extends JPanel {
         wSize = Math.min(wX, wY);
         Graphics2D g2 = (Graphics2D) g;
         int pSize = (int)((double) wSize * 0.8 / Math.max(6, prompt.length()));
+        pSize = Math.min(pSize, wSize / 8);
         int pX = (int)((double) pSize * prompt.length() * -0.6D) + wX/2;
         int pY = wSize/2 - (int)(pSize*1.5) + wY - wSize;
         int pArc = pSize / 6;
@@ -151,6 +212,8 @@ public class GamePanel extends JPanel {
         // Prompt
         g2.setStroke(new BasicStroke(4));
         FontMetrics metrics = g2.getFontMetrics(g2.getFont()); // https://stackoverflow.com/questions/27706197/how-can-i-center-graphics-drawstring-in-java
+        HomePanel.drawTiles(g2, g2.getFont(), tiles, pSize, (int)(tick - animStartTick));
+        /*
         for (int i = 0; i < prompt.length(); i++) {
             String letter = prompt.substring(i,i+1);
             g2.setColor(promptColors[i]);
@@ -161,6 +224,7 @@ public class GamePanel extends JPanel {
                     pX + (int)(pSize * 1.2 * (i + 0.4)) - (metrics.stringWidth(letter) / 2),
                     pY + (int)(pSize * 0.75));
         }
+         */
 
         // Round counter
         g2.drawString(Integer.toString(rounds), (wX-wSize)/2 + (pSize / 5), (wY-wSize)/2 + (pSize * 4 / 5));

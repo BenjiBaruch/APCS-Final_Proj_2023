@@ -1,27 +1,35 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.RoundRectangle2D;
 import java.util.*;
+import java.util.Timer;
 
 public class HomePanel extends JPanel {
     // Selected: 0 = new game; 1 = instructions; 2 = leaderboard; 3 = quit
     int selected;
+    Color selectedColor1 = Color.YELLOW;
+    Color selectedColor2 = new Color(0xd4af37);
+    boolean startingGame;
     JFrame window;
     Main game;
     Font font;
     double[][] tilePos;
-    Color[] tileColors;
-    Color[] buttonColors;
+    Color[] tileColors, buttonColors;
     String[] tileChars;
     Tile[] tiles;
     HashMap<Character, Integer> charCounts;
+    int upset, downset;
     int sizeFactor = 8;
+    GameStartAnim anim;
     public HomePanel(JFrame window, Main game, Font font, HashMap<Character, Integer> charCounts) {
         this.game = game;
         this.window = window;
         this.font = font;
         this.charCounts = charCounts;
+        upset = downset = 50;
+        startingGame = false;
         buttonColors = new Color[5];
         for (int i = 0; i < 5; i++) buttonColors[i] = GamePanel.getPastel();
         selected = 0;
@@ -161,49 +169,90 @@ public class HomePanel extends JPanel {
     public void up() {
         if (selected == 0) selected = 3;
         else selected--;
+        repaint();
     }
     public void down() {
         selected = ++selected%4;
+        repaint();
     }
     public void select() {
-
+        switch (selected) {
+            case 0 -> startGame();
+            case 3 -> exit();
+        }
     }
     public void exit() {
-
+        window.dispatchEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSING));
+    }
+    public void reset() {
+        upset = downset = 50;
+        generateTiles2();
+    }
+    private void startGame() {
+        startingGame = true;
+        Timer timer = new Timer();
+        anim = new GameStartAnim(this);
+        timer.scheduleAtFixedRate(anim, 25L, 25L);
+    }
+    public void animTick() {
+        upset += 25;
+        downset -= 25;
+        // System.out.println("uh " + upset + ", ");
+        if (upset > 1000) {
+            anim.cancel();
+            game.startGame(0, tiles);
+        }
+        repaint();
     }
     public void drawButton(Graphics2D g2, String text, Font f, int arcSize, int y, int i) {
         int wX = window.getSize().width;
-        int wY = window.getSize().height;
         g2.setFont(f);
         FontMetrics metrics = g2.getFontMetrics(f);
-        g2.setColor(buttonColors[i]);
+        g2.setColor(buttonColors[i+1]);
         g2.fillRoundRect(wX/2-(metrics.stringWidth(text)*3/5), y, metrics.stringWidth(text)*6/5, metrics.getHeight()*6/5, arcSize, arcSize);
-        g2.setColor(Color.BLACK);
+        if (selected == i) g2.setColor(selectedColor1);
+        else g2.setColor(Color.BLACK);
         g2.drawRoundRect(wX/2-(metrics.stringWidth(text)*3/5), y, metrics.stringWidth(text)*6/5, metrics.getHeight()*6/5, arcSize, arcSize);
+        if (selected == i) g2.setColor(selectedColor2);
         g2.drawString(text, (wX-metrics.stringWidth(text))/2, y+metrics.getHeight()*7/8);
 
     }
 
-    public void drawTiles(Graphics2D g2, JFrame window) {
-        int wX = window.getWidth();
-        int wY = window.getHeight();
+    public static void drawTiles(Graphics2D g2, Font pieceFont, Tile[] tiles, int size, int animTick) {
+        // System.out.println(animTick);
+        final int animLength = 25;
         g2.setStroke(new BasicStroke(4));
         g2.setColor(Color.BLACK);
-        Font pieceFont = font.deriveFont((float)wX/sizeFactor * .6F);
         g2.setFont(pieceFont);
-        int size = Math.min(wX, wY) / sizeFactor;
         FontMetrics metrics = g2.getFontMetrics(g2.getFont());
         for (Tile t : tiles) if (t != null) {
+            int x, y;
+            double r;
+            if (animTick < 0 || !t.inAnim) {
+                x = t.x;
+                y = t.y;
+                r = t.r;
+            }
+            else if (animTick > animLength) {
+                // System.out.print("YOOO    " + t.toX + ',' + t.toY);
+                x = t.toX;
+                y = t.toY;
+                r = 0;
+            } else {
+                x = ((t.fromX * animTick) + (t.toX * (animLength - animTick))) / animLength;
+                y = ((t.fromY * animTick) + (t.toY * (animLength - animTick))) / animLength;
+                r = t.r * (t.inPrompt ? (animLength - animTick) : animTick) / animLength;
+            }
             g2.setColor(t.c);
-            RoundRectangle2D.Double rect = new RoundRectangle2D.Double(t.x, t.y, size, size, size/6D, size/6D);
+            RoundRectangle2D.Double rect = new RoundRectangle2D.Double(x, y, size, size, size/6D, size/6D);
             AffineTransform transform = new AffineTransform();
-            transform.rotate(t.r, t.x+size/2D, t.y+size/2D);
+            transform.rotate(r, x+size/2D, y+size/2D);
             Shape rect2 = transform.createTransformedShape(rect);
             g2.fill(rect2);
             g2.setColor(Color.BLACK);
             g2.draw(rect2);
-            int sx = t.x - metrics.stringWidth(t.s)/2 + (int)(size/2 * Math.cos(t.r));
-            int sy = t.y + metrics.getHeight()/3 + size/2;
+            int sx = x - metrics.stringWidth(t.s)/2 + (int)(size/2 * Math.cos(r));
+            int sy = y + metrics.getHeight()/3 + size/2;
             g2.drawString(t.s, sx, sy);
         }
     }
@@ -219,10 +268,10 @@ public class HomePanel extends JPanel {
         // Set fonts
         Font titleFont = font.deriveFont(wX/13F);
         Font buttonFont = font.deriveFont(wX/25F);
-        Font pieceFont = font.deriveFont((float)wX/sizeFactor * .6F);
+        int size = Math.min(wX, wY) / sizeFactor;
+        Font pieceFont = font.deriveFont(size * .8F);
         g2.setFont(pieceFont);
         FontMetrics metrics = g2.getFontMetrics(g2.getFont());
-        int size = Math.min(wX, wY) / sizeFactor;
 
         // Draw circle
         int radius = (int)(Math.min(wX, wY) * 0.4);
@@ -239,14 +288,13 @@ public class HomePanel extends JPanel {
         }
 
         // Draw tiles
-        drawTiles(g2, window);
+        drawTiles(g2, font.deriveFont((float)wX/sizeFactor * .6F), tiles, size, -1);
 
         // Draw text
-        final int upset = 50;
-        drawButton(g2, "WORD", titleFont, size/6, wY/3 - 18 - upset, 0);
-        drawButton(g2, "PLAY", buttonFont, size/6, wY/3 + metrics.getHeight() * 5 / 4 - upset, 1);
-        drawButton(g2, "INSTRUCTIONS", buttonFont, size/6, wY/3 + metrics.getHeight() * 9 / 4 - upset, 2);
-        drawButton(g2, "LEADERBOARD", buttonFont, size/6, wY/3 + metrics.getHeight() * 13 / 4 - upset, 3);
-        drawButton(g2, "QUIT", buttonFont, size/6, wY/3 + metrics.getHeight() * 17 / 4 - upset, 4);
+        drawButton(g2, "WORD", titleFont, size/6, wY/3 - 18 - upset, -1);
+        drawButton(g2, "PLAY", buttonFont, size/6, wY/3 + metrics.getHeight() * 5 / 4 - downset, 0);
+        drawButton(g2, "INSTRUCTIONS", buttonFont, size/6, wY/3 + metrics.getHeight() * 9 / 4 - downset, 1);
+        drawButton(g2, "LEADERBOARD", buttonFont, size/6, wY/3 + metrics.getHeight() * 13 / 4 - downset, 2);
+        drawButton(g2, "QUIT", buttonFont, size/6, wY/3 + metrics.getHeight() * 17 / 4 - downset, 3);
     }
 }

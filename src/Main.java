@@ -15,6 +15,7 @@ public class Main implements KeyListener, ComponentListener {
     HomePanel homePanel;
     EndPanel endPanel;
     GameLoop gameLoop;
+    EnglishDict dict;
     Timer timer;
     int menu;
     Font font;
@@ -25,12 +26,9 @@ public class Main implements KeyListener, ComponentListener {
         } catch (IOException | FontFormatException e) {
             font = Font.getFont(Font.SERIF);
         }
-        EnglishDict dict = new EnglishDict();
+        dict = new EnglishDict();
         createWindow(dict.getPromptList());
-        timer = new Timer();
-        gameLoop = new GameLoop(gamePanel, dict);
-        if (menu == 1) timer.scheduleAtFixedRate(gameLoop, 25L, 25L);
-    }
+        }
 
     private HashMap<Character, Integer> countChars(String[] prompts) {
         HashMap<Character, Integer> charCounts = new HashMap<>(27);
@@ -74,8 +72,30 @@ public class Main implements KeyListener, ComponentListener {
         window.setLocationRelativeTo(null);
         window.setVisible(true);
     }
-    public void startGame() {
-
+    public void startGame(int from, Tile[] tiles) {
+        System.out.println("START GAME YOU FOOL");
+        window.remove(from == 0 ? homePanel : endPanel);
+        window.add(gamePanel);
+        gamePanel.grabFocus();
+        gamePanel.newGame(tiles);
+        timer = new Timer();
+        gameLoop = new GameLoop(gamePanel, dict, this);
+        timer.scheduleAtFixedRate(gameLoop, 25L, 25L);
+        menu = 1;
+        window.revalidate();
+    }
+    public void homeScreen(int from) {
+        gameLoop.cancel();
+        gameLoop = null;
+        window.remove(from == 1 ? gamePanel : endPanel);
+        window.repaint();
+        dict.autoPromptList();
+        window.add(homePanel);
+        homePanel.reset();
+        homePanel.grabFocus();
+        menu = 0;
+        window.revalidate();
+        homePanel.repaint();
     }
     public static void main(String[] args) {
         new Main();

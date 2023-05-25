@@ -17,7 +17,7 @@ public class EnglishDict {
         loadProfaneList("data/profane.txt");
         loadWordList("data/words_alpha.txt");
         // loadPromptList("C:\\Users\\ultra\\IdeaProjects\\APCS Final Proj 2023\\data\\prompts.txt");
-        autoPromptList("data/20k.txt");
+        autoPromptList();
         usedWords = new HashSet<>(50);
     }
 
@@ -57,9 +57,10 @@ public class EnglishDict {
         }
         System.out.println("Profane List Length:" + profaneWords.size());
     }
-    public void autoPromptList(String path) {
+    public void autoPromptList() {
         // Fills prompt list with randomly generated prompts of increasing difficulty
 
+        String path = "data/20k.txt";
         // Generate list of 20K most common English words
         String[] easyWordList = new String[20005];
         int head = 0;
