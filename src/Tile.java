@@ -46,4 +46,8 @@ public class Tile {
         this.inAnim = inAnim;
         this.inPrompt = inPrompt;
     }
+
+    public void breakpoint() {
+
+    }
 }

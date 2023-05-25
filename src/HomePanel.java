@@ -220,7 +220,7 @@ public class HomePanel extends JPanel {
 
     public static void drawTiles(Graphics2D g2, Font pieceFont, Tile[] tiles, int size, int animTick) {
         // System.out.println(animTick);
-        final int animLength = 25;
+        final int animLength = 10;
         g2.setStroke(new BasicStroke(4));
         g2.setColor(Color.BLACK);
         g2.setFont(pieceFont);
@@ -239,8 +239,8 @@ public class HomePanel extends JPanel {
                 y = t.toY;
                 r = 0;
             } else {
-                x = ((t.fromX * animTick) + (t.toX * (animLength - animTick))) / animLength;
-                y = ((t.fromY * animTick) + (t.toY * (animLength - animTick))) / animLength;
+                x = ((t.fromX * (animLength - animTick)) + (t.toX * animTick)) / animLength;
+                y = ((t.fromY * (animLength - animTick)) + (t.toY * animTick)) / animLength;
                 r = t.r * (t.inPrompt ? (animLength - animTick) : animTick) / animLength;
             }
             g2.setColor(t.c);

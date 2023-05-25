@@ -53,9 +53,9 @@ public class Main implements KeyListener, ComponentListener {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setResizable(true);
         window.setTitle("Word Guessing Game (original)");
+        window.setSize(800, 650);
         window.addComponentListener(this);
 
-        window.setSize(800, 650);
         gamePanel = new GamePanel(window, this, font);
         gamePanel.setFocusable(true);
         gamePanel.addKeyListener(this);

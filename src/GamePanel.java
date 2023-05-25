@@ -23,6 +23,10 @@ public class GamePanel extends JPanel {
         this.window = window;
         this.game = game;
         this.font = font;
+        Dimension d = window.getSize();
+        wX = d.width;
+        wY = d.height;
+        wSize = Math.min(wX, wY);
         tick = animStartTick = 0;
     }
     public void newGame(Tile[] tiles) {
@@ -104,6 +108,7 @@ public class GamePanel extends JPanel {
         );
     }
     public void startTileAnim(int pSize) {
+        animStartTick = tick;
         int pX = (int)((double) pSize * prompt.length() * -0.6D) + wX/2;
         int pY = wSize/2 - (int)(pSize*1.5) + wY - wSize;
         ArrayList<Tile> inNewPrompt = new ArrayList<>(prompt.length());
@@ -127,6 +132,7 @@ public class GamePanel extends JPanel {
             tile.toX = pX + (int)(pSize * 1.2 * i);
             tile.toY = pY;
             tile.setBools(true, true);
+            tile.breakpoint();
             if (!tile.inAnim) System.out.println("IUGSD JNvfs ");
             if (!Arrays.asList(tiles).contains(tile)) System.out.println("I will wage war against god");
         }
