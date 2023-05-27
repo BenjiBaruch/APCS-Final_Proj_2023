@@ -45,7 +45,7 @@ public class GameLoop extends TimerTask {
         timeStart = System.nanoTime();
         time = 0L;
         timeLimit = (Math.pow(5, -rounds/30D) + 1) * 5000000000L;
-        System.out.println(timeLimit/1000000000L);
+        // System.out.println(timeLimit/1000000000L);
         panel.newRound(prompt, timeLimit);
     }
 
@@ -66,7 +66,7 @@ public class GameLoop extends TimerTask {
     public void guessWord() {
         // Checks if an entered word is valid and resets guess when enter key or space bar is used
         if (head == 0) return;
-        if (dict.checkWord((String.valueOf(Arrays.copyOfRange(guess, 0, head))), prompt)) {
+        if (dict.checkWord((String.valueOf(Arrays.copyOfRange(guess, 0, head))), prompt, true)) {
             newRound();
         } else {
             guess = new char[64];

@@ -112,7 +112,7 @@ public class GamePanel extends JPanel {
         int pX = (int)((double) pSize * prompt.length() * -0.6D) + wX/2;
         int pY = wSize/2 - (int)(pSize*1.5) + wY - wSize;
         ArrayList<Tile> inNewPrompt = new ArrayList<>(prompt.length());
-        System.out.println("p len " + prompt.length());
+        // System.out.println("p len " + prompt.length());
         for (char letter : prompt.toCharArray()) {
             Tile[] hasChar = new Tile[4];
             int charCount = 0;
@@ -121,12 +121,12 @@ public class GamePanel extends JPanel {
                     hasChar[charCount++] = tile;
             Tile addedTile = hasChar[(int)(Math.random()*charCount)];
             inNewPrompt.add(addedTile);
-            System.out.println(charCount);
+            // System.out.println(charCount);
         }
-        System.out.println("iNP size " + inNewPrompt.size());
+        // System.out.println("iNP size " + inNewPrompt.size());
         for (int i = 0; i < inNewPrompt.size(); i++) {
             Tile tile = inNewPrompt.get(i);
-            System.out.print(tile.s);
+            // System.out.print(tile.s);
             tile.fromX = tile.toX;
             tile.fromY = tile.toY;
             tile.toX = pX + (int)(pSize * 1.2 * i);

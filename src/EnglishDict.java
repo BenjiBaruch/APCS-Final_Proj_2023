@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Scanner;
 
 public class EnglishDict {
     // Words from: https://github.com/dwyl/english-words
@@ -18,7 +19,7 @@ public class EnglishDict {
         loadWordList("data/words_alpha.txt");
         // loadPromptList("C:\\Users\\ultra\\IdeaProjects\\APCS Final Proj 2023\\data\\prompts.txt");
         autoPromptList();
-        usedWords = new HashSet<>(50);
+        resetUsedList();
     }
 
     public void loadWordList(String path) {
@@ -38,6 +39,9 @@ public class EnglishDict {
             System.out.println("I/O error");
         }
         System.out.println("Word List Length:" + validWords.size());
+    }
+    public void resetUsedList() {
+        usedWords = new HashSet<>(50);
     }
     public void loadProfaneList(String path) {
         // Loads word list from txt file
@@ -70,8 +74,7 @@ public class EnglishDict {
             String entry = in.readLine();
             while (entry != null) {
                 entry = entry.strip().toUpperCase();
-                boolean valid = true;
-                if (entry.length() < 5) valid = false;
+                boolean valid = entry.length() >= 5;
                 if (valid && !validWords.contains(entry)) valid = false;
                 if (valid) for (int i = 0; i < entry.length(); i++) switch (entry.charAt(i)) {
                     case '_' | '-' | '\'' | ' ':
@@ -173,8 +176,9 @@ public class EnglishDict {
         System.out.println("Prompt List Length:" + validWords.size());
     }
 
-    public boolean checkWord(String word, String prompt) {
+    public boolean checkWord(String word, String prompt, boolean diagnostics) {
         // Word is invalid if it is the same as the prompt (unless it fills in a blank)
+        if (diagnostics) System.out.println('\n' + word + ", " + prompt);
         if (word.length() == prompt.length()) {
             boolean hasBlank = false;
             for (int i = 0; i < prompt.length(); i++)
@@ -182,12 +186,21 @@ public class EnglishDict {
                     hasBlank = true;
                     break;
                 }
-            if (!hasBlank) return false;
+            if (!hasBlank) {
+                if (diagnostics) System.out.println("ERR: word == prompt");
+                return false;
+            }
         }
         // Word is invalid if it is not in the list of English words
-        if (!validWords.contains(word.strip().toUpperCase())) return false;
+        if (!validWords.contains(word.strip().toUpperCase())) {
+            if (diagnostics) System.out.println("ERR: Not in valid words");
+            return false;
+        }
         // Word is invalid if it has already been used this game
-        if (usedWords.contains(word.strip().toUpperCase())) return false;
+        if (usedWords.contains(word.strip().toUpperCase())) {
+            if (diagnostics) System.out.println("ERR: Word already used");
+            return false;
+        }
         // Word is valid if and only if each letter of the prompt is found in the word,
         // in order, with no gaps between letters, with blanks replaced by any letter
         int p = 0;
@@ -202,6 +215,7 @@ public class EnglishDict {
                 p = 0;
             }
         }
+        if (diagnostics) System.out.println("ERR: word does not fit prompt");
         return false;
     }
 
@@ -216,8 +230,14 @@ public class EnglishDict {
     }
 
     public static void main(String[] args) {
+        EnglishDict dict = new EnglishDict();
+        Scanner scan = new Scanner(System.in);
         while (true) {
-
+            System.out.println("Enter guess:");
+            String guess = scan.nextLine().toUpperCase().strip();
+            System.out.println("\nEnter prompt:");
+            String prompt = scan.nextLine().toUpperCase().strip();
+            System.out.println("\n"+dict.checkWord(guess, prompt, true)+'\n');
         }
     }
 }

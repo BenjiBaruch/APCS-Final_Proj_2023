@@ -74,6 +74,7 @@ public class Main implements KeyListener, ComponentListener {
     }
     public void startGame(int from, Tile[] tiles) {
         System.out.println("START GAME YOU FOOL");
+        dict.resetUsedList();
         window.remove(from == 0 ? homePanel : endPanel);
         window.add(gamePanel);
         gamePanel.grabFocus();

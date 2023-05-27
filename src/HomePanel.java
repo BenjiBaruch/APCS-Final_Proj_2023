@@ -81,7 +81,7 @@ public class HomePanel extends JPanel {
         for (char c = 'A'; c <= 'Z'; c++) for (int i = 0; i < charCounts.get(c); i++) chars[charLen++] = c;
         chars = Arrays.copyOfRange(chars, 0, charLen);
         Collections.shuffle(Arrays.asList(chars));
-        System.out.println(Arrays.toString(chars));
+        // System.out.println(Arrays.toString(chars));
         for (int i = 0; i < tiles.length; i++) {
             tiles[i] = new Tile(
                     positions.get(i).x - offset,
