@@ -49,6 +49,8 @@ public class EnglishDict {
         try {
             // Modified from previous project (chess)
             BufferedReader in = new BufferedReader(new FileReader(path));
+            in.readLine();
+            in.readLine();
             String entry = in.readLine();
             while (entry != null) {
                 profaneWords.add(entry.strip().toUpperCase());

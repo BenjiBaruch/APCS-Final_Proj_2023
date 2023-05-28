@@ -200,7 +200,7 @@ public class HomePanel extends JPanel {
         // System.out.println("uh " + upset + ", ");
         if (upset > 1000) {
             anim.cancel();
-            game.startGame(0, tiles);
+            game.gameScreen(0, tiles);
         }
         repaint();
     }

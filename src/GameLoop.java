@@ -76,6 +76,6 @@ public class GameLoop extends TimerTask {
     }
 
     public void escape() {
-        game.homeScreen(1);
+        game.endScreen(1, rounds);
     }
 }

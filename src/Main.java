@@ -72,7 +72,7 @@ public class Main implements KeyListener, ComponentListener {
         window.setLocationRelativeTo(null);
         window.setVisible(true);
     }
-    public void startGame(int from, Tile[] tiles) {
+    public void gameScreen(int from, Tile[] tiles) {
         System.out.println("START GAME YOU FOOL");
         dict.resetUsedList();
         window.remove(from == 0 ? homePanel : endPanel);
@@ -98,6 +98,18 @@ public class Main implements KeyListener, ComponentListener {
         window.revalidate();
         homePanel.repaint();
     }
+
+    public void endScreen(int from, int score) {
+        gameLoop.cancel();
+        gameLoop = null;
+        window.remove(from == 1 ? gamePanel : homePanel);
+        window.add(endPanel);
+        menu = 2;
+        endPanel.newScore(score);
+        window.revalidate();
+        endPanel.repaint();
+    }
+
     public static void main(String[] args) {
         new Main();
     }
@@ -121,6 +133,9 @@ public class Main implements KeyListener, ComponentListener {
             else if (code == 8 || code == 37 || code == 65483) gameLoop.backspace();
             else if (code == 9 || code == 10 || code == 32 || code == 40) gameLoop.guessWord();
             else if (code == 27) gameLoop.escape();
+        }
+        if (menu == 2) {
+            if (code == 27 || code == 9 || code == 10 || code == 32 || code == 40) homeScreen(2);
         }
     }
 
