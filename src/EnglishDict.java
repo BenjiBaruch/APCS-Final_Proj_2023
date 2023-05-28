@@ -9,10 +9,10 @@ import java.util.Scanner;
 
 public class EnglishDict {
     // Words from: https://github.com/dwyl/english-words
-    HashSet<String> validWords;
-    HashSet<String> usedWords;
-    HashSet<String> profaneWords;
-    String[] promptList;
+    private HashSet<String> validWords;
+    private HashSet<String> usedWords;
+    private HashSet<String> profaneWords;
+    private String[] promptList;
 
     public EnglishDict() {
         loadProfaneList("data/profane.txt");

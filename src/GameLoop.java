@@ -3,15 +3,16 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class GameLoop extends TimerTask {
-    GamePanel panel;
-    char[] guess;
-    int head, rounds;
-    double timeStart, time, timeLimit, timePrev;
-    int[] fps = new int[200];
-    int frameNum = 0;
-    EnglishDict dict;
-    String prompt;
-    Main game;
+    private final GamePanel panel;
+    private char[] guess;
+    private int head, rounds;
+    private double timeStart, time, timeLimit;
+    // private double timePrev;
+    // private int[] fps = new int[200];
+    // private int frameNum = 0;
+    private final EnglishDict dict;
+    private String prompt;
+    private final Main game;
 
     public GameLoop(GamePanel panel, EnglishDict dict, Main game) {
         this.panel = panel;
@@ -24,17 +25,17 @@ public class GameLoop extends TimerTask {
 
     @Override
     public void run() {
-        if (time > timeLimit) escape();
-        timePrev = time;
+        if (time > timeLimit) game.endScreen(1, rounds);
+        // timePrev = time;
         time = System.nanoTime() - timeStart;
         panel.update(time);
-        if (frameNum == 200) {
-            frameNum = 0;
-            double fpsSum = 0;
-            for (double item : fps) fpsSum += item;
-        } else {
-            fps[frameNum++] = (int)(1000000000/(time - timePrev));
-        }
+        // if (frameNum == 200) {
+        //     frameNum = 0;
+        //     double fpsSum = 0;
+        //     for (double item : fps) fpsSum += item;
+        // } else {
+        //     fps[frameNum++] = (int)(1000000000/(time - timePrev));
+        // }
     }
 
     private void newRound() {
@@ -75,7 +76,7 @@ public class GameLoop extends TimerTask {
         }
     }
 
-    public void escape() {
-        game.endScreen(1, rounds);
+    public int getRounds() {
+        return rounds;
     }
 }

@@ -8,28 +8,28 @@ import java.util.Timer;
 
 public class HomePanel extends JPanel {
     // Selected: 0 = new game; 1 = instructions; 2 = leaderboard; 3 = quit
-    int selected;
-    Color selectedColor1 = Color.YELLOW;
-    Color selectedColor2 = new Color(0xd4af37);
-    boolean startingGame;
-    JFrame window;
-    Main game;
-    Font font;
-    double[][] tilePos;
-    Color[] tileColors, buttonColors;
-    String[] tileChars;
-    Tile[] tiles;
-    HashMap<Character, Integer> charCounts;
-    int upset, downset;
-    int sizeFactor = 8;
-    GameStartAnim anim;
+    private int selected;
+    private final Color selectedColor1 = Color.YELLOW;
+    private final Color selectedColor2 = new Color(0xd4af37);
+    // private boolean startingGame;
+    private final JFrame window;
+    private final Main game;
+    private final Font font;
+    // private double[][] tilePos;
+    private final Color[] /*tileColors,*/ buttonColors;
+    // private String[] tileChars;
+    private Tile[] tiles;
+    private final HashMap<Character, Integer> charCounts;
+    private int upset, downset;
+    private final int sizeFactor = 8;
+    private GameStartAnim anim;
     public HomePanel(JFrame window, Main game, Font font, HashMap<Character, Integer> charCounts) {
         this.game = game;
         this.window = window;
         this.font = font;
         this.charCounts = charCounts;
         upset = downset = 50;
-        startingGame = false;
+        // startingGame = false;
         buttonColors = new Color[5];
         for (int i = 0; i < 5; i++) buttonColors[i] = GamePanel.getPastel();
         selected = 0;
@@ -38,6 +38,7 @@ public class HomePanel extends JPanel {
     private boolean sufficientDistance(double x1, double y1, double x2, double y2, double threshold) {
         return (x1-x2)*(x1-x2) + (y2-y1)*(y2-y1) > threshold * threshold;
     }
+    /*
     private void generateTiles1() {
         int tileCount = 20;
         tilePos = new double[tileCount][3];
@@ -72,7 +73,10 @@ public class HomePanel extends JPanel {
         }
     }
 
+     */
+
     private void generateTiles2() {
+        // Generates all the lettered tiles that are strewn about the screen
         ArrayList<Point> positions = getPoints();
         tiles = new Tile[positions.size()];
         int offset = window.getWidth() / sizeFactor / 2;
@@ -93,6 +97,7 @@ public class HomePanel extends JPanel {
     }
 
     private ArrayList<Point> getPoints() {
+        // Incredibly overengineered way of getting a bunch of spaced out points
         // help from http://devmag.org.za/2009/05/03/poisson-disk-sampling/
         final int width = window.getWidth();
         final int height = window.getHeight();
@@ -135,12 +140,14 @@ public class HomePanel extends JPanel {
     }
 
     private Point formatPoint(Point p, double cellSize) {
+        // Returns point of grid position of input point
         int x = (int)(p.x / cellSize);
         int y = (int)(p.y / cellSize);
         return new Point(x, y);
     }
 
     private Point newPoint(Point p, int minDistance, int hS) {
+        // Generates a new point that is a random number of units away in a random direction form the input point
         double r = minDistance * (Math.random() + 1);
         double theta = 2 * Math.PI * Math.random();
         return new Point(
@@ -150,6 +157,7 @@ public class HomePanel extends JPanel {
     }
 
     private boolean inNeighborhood(Point[][] grid, Point p1, int minDistance, double cellSize, int hW, int hH) {
+        // Checks if a point is too close to any other points, or if it is too close to the center
         Point gridPoint = formatPoint(p1, cellSize);
         if ((p1.x-hW)*(p1.x-hW) + (p1.y-hH)*(p1.y-hH) < Math.min(hW,hH)*Math.min(hW,hH)*3/5) return true;
         for (int ix = Math.max(0, gridPoint.x-2); ix <= Math.min(grid.length-1, gridPoint.x+2); ix++)
@@ -167,34 +175,41 @@ public class HomePanel extends JPanel {
     // }
 
     public void up() {
+        // Move selection up
         if (selected == 0) selected = 3;
         else selected--;
         repaint();
     }
     public void down() {
+        // Move selection down
         selected = ++selected%4;
         repaint();
     }
     public void select() {
+        // Select that button
         switch (selected) {
             case 0 -> startGame();
             case 3 -> exit();
         }
     }
     public void exit() {
+        // Close game
         window.dispatchEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSING));
     }
     public void reset() {
+        // Reset animation and tiles
         upset = downset = 50;
         generateTiles2();
     }
     private void startGame() {
-        startingGame = true;
+        // Play anim of buttons moving off screen
+        // startingGame = true;
         Timer timer = new Timer();
         anim = new GameStartAnim(this);
         timer.scheduleAtFixedRate(anim, 25L, 25L);
     }
     public void animTick() {
+        // Step the anim once
         upset += 25;
         downset -= 25;
         // System.out.println("uh " + upset + ", ");
@@ -205,6 +220,7 @@ public class HomePanel extends JPanel {
         repaint();
     }
     public void drawButton(Graphics2D g2, String text, Font f, int arcSize, int y, int i) {
+        // Draw a button in a position, deal with highlighting selected, etc.
         int wX = window.getSize().width;
         g2.setFont(f);
         FontMetrics metrics = g2.getFontMetrics(f);
@@ -219,6 +235,7 @@ public class HomePanel extends JPanel {
     }
 
     public static void drawTiles(Graphics2D g2, Font pieceFont, Tile[] tiles, int size, int animTick) {
+        // Draw all those tiles on the screen
         // System.out.println(animTick);
         final int animLength = 10;
         g2.setStroke(new BasicStroke(4));

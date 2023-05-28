@@ -1,23 +1,18 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.Point2D;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 public class GamePanel extends JPanel {
-    String prompt, guess;
-    Color[] promptColors, guessColors;
-    double time, timeLimit;
-    Tile[] tiles;
-    int wX, wY, wSize, rounds;
-    Font font;
-    JFrame window;
-    Main game;
-    long tick, animStartTick;
+    private String prompt, guess;
+    private Color[] guessColors;
+    private double time, timeLimit;
+    private Tile[] tiles;
+    private int wX, wY, wSize, rounds;
+    private final Font font;
+    private final JFrame window;
+    private final Main game;
+    private long tick, animStartTick;
 
     public GamePanel(JFrame window, Main game, Font font) {
         this.window = window;
@@ -42,9 +37,9 @@ public class GamePanel extends JPanel {
         // Grabs new prompt, reset time and guess, changes prompt/guess colors, increments round.
         this.prompt = prompt;
         rounds++;
-        promptColors = new Color[prompt.length()];
-        for (int i = 0; i < prompt.length(); i++)
-            promptColors[i] = getPastel();
+        // promptColors = new Color[prompt.length()];
+        // for (int i = 0; i < prompt.length(); i++)
+        //     promptColors[i] = getPastel();
         guessColors = new Color[64];
         for (int i = 0; i < 64; i++)
             guessColors[i] = getPastel();
