@@ -143,19 +143,19 @@ public class EnglishDict {
             else level = 7;
 
             if (level < 3) for (int i = 0; i < prompt.length(); i++) if (prompt.charAt(i) == '_') continue CreatePromptList;
-            if (prompts[level].size() < 10) prompts[level].add(prompt);
+            if (prompts[level].size() < 5) prompts[level].add(prompt);
             else {
                 complete = true;
                 for (ArrayList<String> list : prompts)
-                    if (list.size() < 10) {
+                    if (list.size() < 5) {
                         complete = false;
                         break;
                     }
             }
         }
 
-        promptList = new String[80];
-        for (int i = 0; i < 80; i++) promptList[i] = prompts[i/10].get(i%10);
+        promptList = new String[40];
+        for (int i = 0; i < 40; i++) promptList[i] = prompts[i/5].get(i%5);
         System.out.println(Arrays.toString(promptList));
     }
 

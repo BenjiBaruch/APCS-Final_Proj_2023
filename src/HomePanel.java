@@ -19,7 +19,7 @@ public class HomePanel extends JPanel {
     private final Color[] /*tileColors,*/ buttonColors;
     // private String[] tileChars;
     private Tile[] tiles;
-    private final HashMap<Character, Integer> charCounts;
+    private HashMap<Character, Integer> charCounts;
     private int upset, downset;
     private final int sizeFactor = 8;
     private GameStartAnim anim;
@@ -35,6 +35,11 @@ public class HomePanel extends JPanel {
         selected = 0;
         generateTiles2();
     }
+
+    public void setCharCounts(HashMap<Character, Integer> charCounts) {
+        this.charCounts = charCounts;
+    }
+
     private boolean sufficientDistance(double x1, double y1, double x2, double y2, double threshold) {
         return (x1-x2)*(x1-x2) + (y2-y1)*(y2-y1) > threshold * threshold;
     }
@@ -83,6 +88,7 @@ public class HomePanel extends JPanel {
         Character[] chars = new Character[50];
         int charLen = 0;
         for (char c = 'A'; c <= 'Z'; c++) for (int i = 0; i < charCounts.get(c); i++) chars[charLen++] = c;
+        chars[charLen++] = '_';
         chars = Arrays.copyOfRange(chars, 0, charLen);
         Collections.shuffle(Arrays.asList(chars));
         // System.out.println(Arrays.toString(chars));

@@ -19,6 +19,8 @@ public class Main implements KeyListener, ComponentListener {
     private int menu;
     private Font font;
     private SoundThingy sound;
+    String[] prompts;
+    HashMap<Character, Integer> charCounts;
     public Main() {
         menu = 0;
         try {
@@ -29,7 +31,8 @@ public class Main implements KeyListener, ComponentListener {
         dict = new EnglishDict();
         sound = new SoundThingy();
         // sound.start();
-        createWindow(dict.getPromptList());
+        prompts = dict.getPromptList();
+        createWindow();
         }
 
     private HashMap<Character, Integer> countChars(String[] prompts) {
@@ -42,9 +45,10 @@ public class Main implements KeyListener, ComponentListener {
         charCounts.put('_', 0);
         for (String prompt : prompts) {
             HashMap<Character, Integer> pA = new HashMap<>(4);
+            for (char i = 'A'; i <= 'Z'; i++) pA.put(i, 0);
+            pA.put('_', 0);
             for (char letter : prompt.toCharArray()) {
-                if (pA.containsKey(letter)) pA.replace(letter, pA.get(letter)+1);
-                else pA.put(letter, 1);
+                pA.replace(letter, pA.get(letter)+1);
             }
             for (char i : pA.keySet()) if(charCounts.get(i) < pA.get(i)) charCounts.replace(i, pA.get(i));
         }
@@ -52,9 +56,9 @@ public class Main implements KeyListener, ComponentListener {
         return charCounts;
     }
 
-    private void createWindow(String[] prompts) {
+    private void createWindow() {
         // Creates the window, believe it or not
-        HashMap<Character, Integer> charCounts = countChars(prompts);
+        charCounts = countChars(prompts);
 
         // Initiates and configures JFrame
         window = new JFrame();
@@ -104,6 +108,9 @@ public class Main implements KeyListener, ComponentListener {
         window.remove(from == 1 ? gamePanel : endPanel);
         window.repaint();
         dict.autoPromptList();
+        prompts = dict.getPromptList();
+        charCounts = countChars(prompts);
+        homePanel.setCharCounts(charCounts);
         window.add(homePanel);
         homePanel.reset();
         homePanel.grabFocus();
