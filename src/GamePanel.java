@@ -109,7 +109,7 @@ public class GamePanel extends JPanel {
         ArrayList<Tile> inNewPrompt = new ArrayList<>(prompt.length());
         // System.out.println("p len " + prompt.length());
         for (char letter : prompt.toCharArray()) {
-            Tile[] hasChar = new Tile[4];
+            Tile[] hasChar = new Tile[5];
             int charCount = 0;
             for (Tile tile : tiles)
                 if (tile.s.charAt(0) == letter && !inNewPrompt.contains(tile))
