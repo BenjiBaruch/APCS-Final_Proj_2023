@@ -13,6 +13,7 @@ public class SoundThingy extends Thread {
         try (Clip clip = AudioSystem.getClip()){
             clip.open(AudioSystem.getAudioInputStream(new File(path).getAbsoluteFile()));
             clip.start();
+            clip.setFramePosition(0);
             System.out.println(clip.isRunning() ? "Clip is running" : "God is dead");
         } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
             throw new RuntimeException(e);

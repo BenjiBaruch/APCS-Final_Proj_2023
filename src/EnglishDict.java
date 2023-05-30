@@ -221,10 +221,13 @@ public class EnglishDict {
         return false;
     }
 
-    public String randomPrompt(int round) {
+    public String randomPrompt(int round, String prevPrompt) {
         // Grabs random prompt from list. The higher the round number, the harder the prompts (on average)
-        int index = (int)(Math.random() * Math.min(round+10, promptList.length));
-        return promptList[index];
+        do {
+            int index = (int)(Math.random() * Math.min(round+10, promptList.length));
+            if (!promptList[index].equals(prevPrompt)) return promptList[index];
+        } while (true);
+
     }
 
     public String[] getPromptList() {

@@ -291,9 +291,9 @@ public class HomePanel extends JPanel {
         FontMetrics metrics = g2.getFontMetrics(g2.getFont());
 
         // Draw circle
-        int radius = (int)(Math.min(wX, wY) * 0.4);
+        int radius = (int)(Math.min(wX, wY) * (0.4 - (0.1 / (1 + Math.exp(-0.02 * (upset - 250))))));
         g2.setStroke(new BasicStroke(Math.min(wX, wY) / 80F));
-        g2.setColor(Color.RED);
+        g2.setColor(Color.GREEN);
         for (int i = 0; i < 150; i++) {
             double theta1 = (2*Math.PI * i / 150) + (Math.PI / 2);
             double theta2 = (2*Math.PI * (i + 1) / 150) + (Math.PI / 2);

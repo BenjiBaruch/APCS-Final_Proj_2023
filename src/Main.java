@@ -28,7 +28,7 @@ public class Main implements KeyListener, ComponentListener {
         }
         dict = new EnglishDict();
         sound = new SoundThingy();
-        sound.start();
+        // sound.start();
         createWindow(dict.getPromptList());
         }
 
@@ -120,7 +120,7 @@ public class Main implements KeyListener, ComponentListener {
         window.remove(from == 1 ? gamePanel : homePanel);
         window.add(endPanel);
         menu = 2;
-        endPanel.newScore(score);
+        endPanel.newScore(score-1);
         endPanel.grabFocus();
         window.revalidate();
         endPanel.repaint();

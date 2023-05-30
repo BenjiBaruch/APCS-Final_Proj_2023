@@ -167,7 +167,7 @@ public class GamePanel extends JPanel {
         int pArc = pSize / 6;
         int segmentsTotal = 150;
         int segmentsCurrent = (int)(segmentsTotal * (1 - (time / timeLimit)));
-        int radius = (int)(wSize * 0.4);
+        int radius = (int)(wSize * 0.3);
 
         // Configure g2
         g2.setFont(font.deriveFont(pSize * 0.8F));

@@ -42,7 +42,7 @@ public class GameLoop extends TimerTask {
         // Resets guess, time limit, and calls panel newRound method.
         guess = new char[64];
         head = 0;
-        prompt = dict.randomPrompt(++rounds);
+        prompt = dict.randomPrompt(++rounds, prompt);
         timeStart = System.nanoTime();
         time = 0L;
         timeLimit = (Math.pow(5, -rounds/30D) + 1) * 5000000000L;
